@@ -57,7 +57,7 @@ void KNCube::_ComputeSize( const Configuration &config )
 
   gK = _k; gN = _n;
   _size     = powi( _k, _n );
-  _channels = 2*_n*_size;
+  _channels = 2*_n*_size;//each node has 2  channels on every dimension, thus the result is unidirectional channel count
 
   _nodes = _size;
 }
@@ -88,17 +88,17 @@ void KNCube::_BuildNet( const Configuration &config )
     
     if ( _k > 1 ) {
       for ( int dim_offset = _size / _k; dim_offset >= 1; dim_offset /= _k ) {
-	router_name << "_" << ( node / dim_offset ) % _k;
+		router_name << "_" << ( node / dim_offset ) % _k;	//number the node
       }
     }
 
     _routers[node] = Router::NewRouter( config, this, router_name.str( ), 
-					node, 2*_n + 1, 2*_n + 1 );
+					node, 2*_n + 1, 2*_n + 1 );	//we use "2*_n + 1" because each router has an additional channel for injecting and ejecting
     _timed_modules.push_back(_routers[node]);
 
     router_name.str("");
 
-    for ( int dim = 0; dim < _n; ++dim ) {
+    for ( int dim = 0; dim < _n; ++dim ) {//attach all the channels to the router
 
       //find the neighbor 
       left_node  = _LeftNode( node, dim );
@@ -116,7 +116,7 @@ void KNCube::_BuildNet( const Configuration &config )
       // torus channel is longer due to wrap around
       int latency = _mesh ? 1 : 2 ;
 
-      //get the input channel number
+      //get the input channel number. WHY NOT get the left and right channel directly?? Because what we get directly is the output channel from this node!!!
       right_input = _LeftChannel( right_node, dim );
       left_input  = _RightChannel( left_node, dim );
 
@@ -126,15 +126,15 @@ void KNCube::_BuildNet( const Configuration &config )
 
       //set input channel latency
       if(use_noc_latency){
-	_chan[right_input]->SetLatency( latency );
-	_chan[left_input]->SetLatency( latency );
-	_chan_cred[right_input]->SetLatency( latency );
-	_chan_cred[left_input]->SetLatency( latency );
+		_chan[right_input]->SetLatency( latency );
+		_chan[left_input]->SetLatency( latency );
+		_chan_cred[right_input]->SetLatency( latency );
+		_chan_cred[left_input]->SetLatency( latency );
       } else {
-	_chan[left_input]->SetLatency( 1 );
-	_chan_cred[right_input]->SetLatency( 1 );
-	_chan_cred[left_input]->SetLatency( 1 );
-	_chan[right_input]->SetLatency( 1 );
+		_chan[left_input]->SetLatency( 1 );
+		_chan_cred[right_input]->SetLatency( 1 );
+		_chan_cred[left_input]->SetLatency( 1 );
+		_chan[right_input]->SetLatency( 1 );
       }
       //get the output channel number
       right_output = _RightChannel( node, dim );
@@ -146,15 +146,15 @@ void KNCube::_BuildNet( const Configuration &config )
 
       //set output channel latency
       if(use_noc_latency){
-	_chan[right_output]->SetLatency( latency );
-	_chan[left_output]->SetLatency( latency );
-	_chan_cred[right_output]->SetLatency( latency );
-	_chan_cred[left_output]->SetLatency( latency );
+		_chan[right_output]->SetLatency( latency );
+		_chan[left_output]->SetLatency( latency );
+		_chan_cred[right_output]->SetLatency( latency );
+		_chan_cred[left_output]->SetLatency( latency );
       } else {
-	_chan[right_output]->SetLatency( 1 );
-	_chan[left_output]->SetLatency( 1 );
-	_chan_cred[right_output]->SetLatency( 1 );
-	_chan_cred[left_output]->SetLatency( 1 );
+		_chan[right_output]->SetLatency( 1 );
+		_chan[left_output]->SetLatency( 1 );
+		_chan_cred[right_output]->SetLatency( 1 );
+		_chan_cred[left_output]->SetLatency( 1 );
 
       }
     }
@@ -190,7 +190,7 @@ int KNCube::_LeftNode( int node, int dim )
   int k_to_dim = powi( _k, dim );
   int loc_in_dim = ( node / k_to_dim ) % _k;
   int left_node;
-  // if at the left edge of the dimension, wraparound
+  // if at the left edge of the dimension, wraparound within this dimension
   if ( loc_in_dim == 0 ) {
     left_node = node + (_k-1)*k_to_dim;
   } else {
@@ -205,7 +205,7 @@ int KNCube::_RightNode( int node, int dim )
   int k_to_dim = powi( _k, dim );
   int loc_in_dim = ( node / k_to_dim ) % _k;
   int right_node;
-  // if at the right edge of the dimension, wraparound
+  // if at the right edge of the dimension, wraparound within this dimension
   if ( loc_in_dim == ( _k-1 ) ) {
     right_node = node - (_k-1)*k_to_dim;
   } else {

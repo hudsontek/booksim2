@@ -81,9 +81,9 @@ InjectionProcess * InjectionProcess::New(string const & inject, int nodes,
     double alpha = numeric_limits<double>::quiet_NaN();
     if(params.size() < 1) {
       if(config) {
-	alpha = config->GetFloat("burst_alpha");
+		alpha = config->GetFloat("burst_alpha");
       } else {
-	missing_params = true;
+		missing_params = true;
       }
     } else {
       alpha = atof(params[0].c_str());
@@ -91,9 +91,9 @@ InjectionProcess * InjectionProcess::New(string const & inject, int nodes,
     double beta = numeric_limits<double>::quiet_NaN();
     if(params.size() < 2) {
       if(config) {
-	beta = config->GetFloat("burst_beta");
+		beta = config->GetFloat("burst_beta");
       } else {
-	missing_params = true;
+		missing_params = true;
       }
     } else {
       beta = atof(params[1].c_str());
@@ -121,7 +121,7 @@ InjectionProcess * InjectionProcess::New(string const & inject, int nodes,
       initial.resize(nodes, initial.back());
     } else {
       for(int n = 0; n < nodes; ++n) {
-	initial[n] = RandomInt(1);
+		initial[n] = RandomInt(1);
       }
     }
     result = new OnOffInjectionProcess(nodes, load, alpha, beta, r1, initial);

@@ -33,7 +33,7 @@
 //       k^(n-1) Routers. The Routers are organized such that 
 //       each node has k descendents, and each parent is
 //       replicated k  times.
-//      most routers has 2K ports, excep the top level has only K
+//      most routers has 2K ports, except the top level has only K
 ////////////////////////////////////////////////////////////////////////
 //
 // RCS Information:
@@ -77,10 +77,10 @@ void FatTree::_ComputeSize( const Configuration& config )
   _nodes = powi( _k, _n );
 
   //levels * routers_per_level
-  _size = _n * powi( _k , _n - 1 );
+  _size = _n * powi( _k , _n - 1 );	//is this correct?
 
   //(channels per level = k*routers_per_level* up/down) * (levels-1)
-  _channels = (2*_k * powi( _k , _n-1 ))*(_n-1); 
+  _channels = (2*_k * powi( _k , _n-1 ))*(_n-1);	//is this correct?
   
 
 }
@@ -112,9 +112,9 @@ void FatTree::_BuildNet( const Configuration& config )
     for ( pos = 0 ; pos < nPos ; ++pos ) {
       
       if ( level == 0 ) //top routers is zero
-	degree = _k;
+		degree = _k;
       else
-	degree = 2 * _k;
+		degree = 2 * _k;
 
       id = level * nPos + pos;
 
@@ -137,10 +137,10 @@ void FatTree::_BuildNet( const Configuration& config )
   //                         Input Ports <gK from DOWN Network
   //                         Input Ports >=gK  from up Network
 
-  // Connecting  Injection & Ejection Channels  
-  for ( pos = 0 ; pos < nPos ; ++pos ) {
-    for(int index = 0; index<_k; index++){
-      int link = pos*_k + index;
+  // Connecting  Injection & Ejection Channels  , all these channels are in the last level
+  for ( pos = 0 ; pos < nPos ; ++pos ) {	//which router
+    for(int index = 0; index<_k; index++){	//which channel of the router
+      int link = pos*_k + index;	//index into the inject/eject channel array
       _Router( _n-1, pos)->AddInputChannel( _inject[link],
 					    _inject_cred[link]);
       _Router( _n-1, pos)->AddOutputChannel( _eject[link],
@@ -165,34 +165,34 @@ void FatTree::_BuildNet( const Configuration& config )
   for (level = 0; level<_n-1; level++){
     for ( pos = 0; pos < nPos; ++pos ) {
       for ( port = 0; port < _k; ++port ) {
-	int link = (level*chan_per_level) + pos*_k + port;
-	_Router(level, pos)->AddOutputChannel( _chan[link],
-						_chan_cred[link] );
-	_chan[link]->SetLatency( 1 );
-	_chan_cred[link]->SetLatency( 1 ); 
+		int link = (level*chan_per_level) + pos*_k + port;
+		_Router(level, pos)->AddOutputChannel( _chan[link],
+							_chan_cred[link] );
+		_chan[link]->SetLatency( 1 );
+		_chan_cred[link]->SetLatency( 1 ); 
 #ifdef FATTREE_DEBUG
-	cout<<_Router(level, pos)->Name()<<" "
-	    <<"down output "<<port<<" "
-	    <<"channel_id "<<link<<endl;
+		cout<<_Router(level, pos)->Name()<<" "
+		    <<"down output "<<port<<" "
+		    <<"channel_id "<<link<<endl;
 #endif
 
       }
     }
   }
   //connect all up output channels
-  //level 0 has no up chnanels
+  //level 0 has no up channels
   for (level = 1; level<_n; level++){
     for ( pos = 0; pos < nPos; ++pos ) {
       for ( port = 0; port < _k; ++port ) {
-	int link = (level*chan_per_level - chan_per_direction) + pos*_k + port ;
-	_Router(level, pos)->AddOutputChannel( _chan[link],
-						_chan_cred[link] );
-	_chan[link]->SetLatency( 1 );
-	_chan_cred[link]->SetLatency( 1 ); 
+		int link = (level*chan_per_level - chan_per_direction) + pos*_k + port ;
+		_Router(level, pos)->AddOutputChannel( _chan[link],
+							_chan_cred[link] );
+		_chan[link]->SetLatency( 1 );
+		_chan_cred[link]->SetLatency( 1 ); 
 #ifdef FATTREE_DEBUG
-	cout<<_Router(level, pos)->Name()<<" "
-	    <<"up output "<<port<<" "
-	    <<"channel_id "<<link<<endl;
+		cout<<_Router(level, pos)->Name()<<" "
+		    <<"up output "<<port<<" "
+		    <<"channel_id "<<link<<endl;
 #endif
       }
     }
@@ -212,19 +212,19 @@ void FatTree::_BuildNet( const Configuration& config )
       int neighborhood = pos/routers_per_neighborhood;
       int neighborhood_pos = pos%routers_per_neighborhood;
       for ( port = 0; port < _k; ++port ) {
-	int link = 
-	  ((level+1)*chan_per_level - chan_per_direction)  //which levellevel
-	  +neighborhood*level_offset   //region in level
-	  +port*routers_per_branch*gK  //sub region in region
-	  +(neighborhood_pos)%routers_per_branch*gK  //router in subregion
-	  +(neighborhood_pos)/routers_per_branch; //port on router
+		int link = 
+		  ((level+1)*chan_per_level - chan_per_direction)  //next level's output channel, correspond to line 187
+		  +neighborhood*level_offset   //region in level
+		  +port*routers_per_branch*gK  //sub region in region
+		  +(neighborhood_pos)%routers_per_branch*gK  //router in subregion
+		  +(neighborhood_pos)/routers_per_branch; //port on router
 
-	_Router(level, pos)->AddInputChannel( _chan[link],
+		_Router(level, pos)->AddInputChannel( _chan[link],
 					      _chan_cred[link] );
 #ifdef FATTREE_DEBUG
-	cout<<_Router(level, pos)->Name()<<" "
-	    <<"down input "<<port<<" "
-	    <<"channel_id "<<link<<endl;
+		cout<<_Router(level, pos)->Name()<<" "
+		    <<"down input "<<port<<" "
+		    <<"channel_id "<<link<<endl;
 #endif
       }
     }
@@ -241,19 +241,19 @@ void FatTree::_BuildNet( const Configuration& config )
       int neighborhood = pos/routers_per_neighborhood;
       int neighborhood_pos = pos%routers_per_neighborhood;
       for ( port = 0; port < _k; ++port ) {
-	int link = 
-	  ((level-1)*chan_per_level) //which levellevel
-	  +neighborhood*level_offset   //region in level
-	  +port*routers_per_branch*gK  //sub region in region
-	  +(neighborhood_pos)%routers_per_branch*gK //router in subregion
-	  +(neighborhood_pos)/routers_per_branch; //port on router
+		int link = 
+		  ((level-1)*chan_per_level) //which levellevel
+		  +neighborhood*level_offset   //region in level
+		  +port*routers_per_branch*gK  //sub region in region
+		  +(neighborhood_pos)%routers_per_branch*gK //router in subregion
+		  +(neighborhood_pos)/routers_per_branch; //port on router
 
-	_Router(level, pos)->AddInputChannel( _chan[link],
+		_Router(level, pos)->AddInputChannel( _chan[link],
 					      _chan_cred[link] );
 #ifdef FATTREE_DEBUG
-	cout<<_Router(level, pos)->Name()<<" "
-	    <<"up input "<<port<<" "
-	    <<"channel_id "<<link<<endl;
+		cout<<_Router(level, pos)->Name()<<" "
+		    <<"up input "<<port<<" "
+		    <<"channel_id "<<link<<endl;
 #endif
       }
     }

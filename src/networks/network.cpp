@@ -82,34 +82,34 @@ Network * Network::New(const Configuration & config, const string & name)
   const string topo = config.GetStr( "topology" );
   Network * n = NULL;
   if ( topo == "torus" ) {
-    KNCube::RegisterRoutingFunctions() ;
+    KNCube::RegisterRoutingFunctions() ;//temporarily null now
     n = new KNCube( config, name, false );
   } else if ( topo == "mesh" ) {
-    KNCube::RegisterRoutingFunctions() ;
+    KNCube::RegisterRoutingFunctions() ;//temporarily null now
     n = new KNCube( config, name, true );
   } else if ( topo == "cmesh" ) {
-    CMesh::RegisterRoutingFunctions() ;
+    CMesh::RegisterRoutingFunctions() ;//not null
     n = new CMesh( config, name );
   } else if ( topo == "fly" ) {
-    KNFly::RegisterRoutingFunctions() ;
+    KNFly::RegisterRoutingFunctions() ;//temporarily null now
     n = new KNFly( config, name );
   } else if ( topo == "qtree" ) {
-    QTree::RegisterRoutingFunctions() ;
+    QTree::RegisterRoutingFunctions() ;//temporarily null now
     n = new QTree( config, name );
   } else if ( topo == "tree4" ) {
-    Tree4::RegisterRoutingFunctions() ;
+    Tree4::RegisterRoutingFunctions() ;//temporarily null now
     n = new Tree4( config, name );
   } else if ( topo == "fattree" ) {
-    FatTree::RegisterRoutingFunctions() ;
+    FatTree::RegisterRoutingFunctions() ;//temporarily null now
     n = new FatTree( config, name );
   } else if ( topo == "flatfly" ) {
-    FlatFlyOnChip::RegisterRoutingFunctions() ;
+    FlatFlyOnChip::RegisterRoutingFunctions() ;//not null
     n = new FlatFlyOnChip( config, name );
   } else if ( topo == "anynet"){
-    AnyNet::RegisterRoutingFunctions() ;
+    AnyNet::RegisterRoutingFunctions() ;//not null
     n = new AnyNet(config, name);
   } else if ( topo == "dragonflynew"){
-    DragonFlyNew::RegisterRoutingFunctions() ;
+    DragonFlyNew::RegisterRoutingFunctions() ;//not null
     n = new DragonFlyNew(config, name);
   } else {
     cerr << "Unknown topology: " << topo << endl;
@@ -123,7 +123,7 @@ Network * Network::New(const Configuration & config, const string & name)
   }
   return n;
 }
-
+//create inject and eject channels, and normal channels, plus the associated credit channels
 void Network::_Alloc( )
 {
   assert( ( _size != -1 ) && 
@@ -134,9 +134,9 @@ void Network::_Alloc( )
   gNodes = _nodes;
 
   /*booksim used arrays of flits as the channels which makes have capacity of
-   *one. To simulate channel latency, flitchannel class has been added
+   *one. To simulate channel latency, flit channel class has been added
    *which are fifos with depth = channel latency and each cycle the channel
-   *shifts by one
+   *shifts by one.
    *credit channels are the necessary counter part
    */
   _inject.resize(_nodes);

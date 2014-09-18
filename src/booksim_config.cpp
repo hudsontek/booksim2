@@ -86,7 +86,7 @@ BookSimConfig::BookSimConfig( )
   _int_map["credit_delay"] = 0;
   _float_map["internal_speedup"] = 1.0;
 
-  //with switch speedup flits requires otuput buffering
+  //with switch speedup flits requires output buffering
   //full output buffer will cancel switch allocation requests
   //default setting is unlimited
   _int_map["output_buffer_size"] = -1;
@@ -161,7 +161,7 @@ BookSimConfig::BookSimConfig( )
   AddStrField("class_priority", ""); // workaraound to allow for vector specification
 
   _int_map["perm_seed"] = 0; // seed value for random permuation trafficpattern generator
-  AddStrField("parm_seed", ""); // workaround to allow special "time" value
+  AddStrField("parm_seed", ""); // workaround to allow special "time" value FIXME?BUG?
 
   _float_map["injection_rate"]       = 0.1;
   AddStrField("injection_rate", ""); // workaraound to allow for vector specification

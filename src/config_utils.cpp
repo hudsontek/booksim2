@@ -226,7 +226,7 @@ extern "C" int config_input(char * line, int max_size)
 
 bool ParseArgs(Configuration * cf, int argc, char * * argv)
 {
-  bool rc = false;
+  bool rc = false;//if a config file is parsed, set rc to true
 
   //all dashed variables are ignored by the arg parser
   for(int i = 1; i < argc; ++i) {
@@ -352,8 +352,8 @@ vector<string> tokenize_str(string const & data)
       --nested;
     } else if(!nested) {
       if(curr > start) {
-	string token = data.substr(start, curr - start);
-	values.push_back(token);
+		string token = data.substr(start, curr - start);
+		values.push_back(token);
       }
       start = curr + 1;
     }
@@ -393,8 +393,8 @@ vector<int> tokenize_int(string const & data)
       --nested;
     } else if(!nested) {
       if(curr > start) {
-	string token = data.substr(start, curr - start);
-	values.push_back(atoi(token.c_str()));
+		string token = data.substr(start, curr - start);
+		values.push_back(atoi(token.c_str()));
       }
       start = curr + 1;
     }
