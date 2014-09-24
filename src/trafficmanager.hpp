@@ -209,7 +209,7 @@ protected:
   bool _measure_latency;
 
   int   _reset_time;
-  int   _drain_time;
+  int   _drain_time;	//the time when drain process starts
 
   int   _total_sims;
   int   _sample_period;
@@ -231,7 +231,7 @@ protected:
 
   int _cur_id;
   int _cur_pid;
-  int _time;
+  int _time;	//current time of the simulator
 
   set<int> _flits_to_watch;
   set<int> _packets_to_watch;

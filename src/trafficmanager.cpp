@@ -965,7 +965,7 @@ void TrafficManager::_Step( )
   
     for ( int subnet = 0; subnet < _subnets; ++subnet ) {
         for ( int n = 0; n < _nodes; ++n ) {
-            Flit * const f = _net[subnet]->ReadFlit( n );
+            Flit * const f = _net[subnet]->ReadFlit( n );//ReadFlit returns the flit destined for node n
             if ( f ) {
                 if(f->watch) {
                     *gWatchOut << GetSimTime() << " | "
@@ -1000,7 +1000,7 @@ void TrafficManager::_Step( )
                 c->Free();
             }
         }
-        _net[subnet]->ReadInputs( );
+        _net[subnet]->ReadInputs( );//call every timed module's ReadInputs() function
     }
   
     if ( !_empty_network ) {
@@ -1440,7 +1440,7 @@ bool TrafficManager::_SingleSim( )
         UpdateStats();
         DisplayStats();
     
-        int lat_exc_class = -1;
+        int lat_exc_class = -1;	//count classes that exceed latency threshold
         int lat_chg_exc_class = -1;
         int acc_chg_exc_class = -1;
     
@@ -1558,7 +1558,7 @@ bool TrafficManager::_SingleSim( )
 	
                 if ( empty_steps % 1000 == 0 ) {
 	  
-                    int lat_exc_class = -1;
+                    int lat_exc_class = -1;	//record which class exceeds the threshold
 	  
                     for(int c = 0; c < _classes; c++) {
 	    
@@ -1641,7 +1641,7 @@ bool TrafficManager::Run( )
             _injection_process[c]->reset();
         }
 
-        if ( !_SingleSim( ) ) {
+        if ( !_SingleSim( ) ) {	//big head
             cout << "Simulation unstable, ending ..." << endl;
             return false;
         }
@@ -1657,7 +1657,7 @@ bool TrafficManager::Run( )
         }
 
         while( packets_left ) { 
-            _Step( ); 
+            _Step( );	//big head
 
             ++empty_steps;
 
@@ -1681,9 +1681,9 @@ bool TrafficManager::Run( )
         cout << "Time taken is " << _time << " cycles" <<endl; 
 
         if(_stats_out) {
-            WriteStats(*_stats_out);
+            WriteStats(*_stats_out);	//big head
         }
-        _UpdateOverallStats();
+        _UpdateOverallStats();	//big head
     }
   
     DisplayOverallStats();

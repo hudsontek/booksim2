@@ -57,7 +57,7 @@ void KNCube::_ComputeSize( const Configuration &config )
 
   gK = _k; gN = _n;
   _size     = powi( _k, _n );
-  _channels = 2*_n*_size;//each node has 2  channels on every dimension, thus the result is unidirectional channel count
+  _channels = 2*_n*_size;//each node has 2  channels on every dimension, thus the result is total unidirectional channel count
 
   _nodes = _size;
 }
@@ -88,7 +88,7 @@ void KNCube::_BuildNet( const Configuration &config )
     
     if ( _k > 1 ) {
       for ( int dim_offset = _size / _k; dim_offset >= 1; dim_offset /= _k ) {
-		router_name << "_" << ( node / dim_offset ) % _k;	//number the node
+		router_name << "_" << ( node / dim_offset ) % _k;	//number the node in a matrix way
       }
     }
 
@@ -98,7 +98,7 @@ void KNCube::_BuildNet( const Configuration &config )
 
     router_name.str("");
 
-    for ( int dim = 0; dim < _n; ++dim ) {//attach all the channels to the router
+    for ( int dim = 0; dim < _n; ++dim ) {//attach related channels to the router
 
       //find the neighbor 
       left_node  = _LeftNode( node, dim );
@@ -165,8 +165,8 @@ void KNCube::_BuildNet( const Configuration &config )
     _eject[node]->SetLatency( 1 );
   }
 }
-
-int KNCube::_LeftChannel( int node, int dim )
+//the channels are numbered in this way: node 0's right channel in dimension 0 is 0, left is 1, right channel in dimension 1 is 2...node 1's right channel in dimension 0 is 2*_n, left is 2*_n+1...
+int KNCube::_LeftChannel( int node, int dim )//channels are numbered node by node, and dimension by dimension of the same node, and right is prior to left
 {
   // The base channel for a node is 2*_n*node
   int base = 2*_n*node;
@@ -184,7 +184,7 @@ int KNCube::_RightChannel( int node, int dim )
   int off  = 2*dim;
   return ( base + off );
 }
-
+//the node is numbered in a matrix way,ie, the leftmost and uppermost has the min number, and the rightmost and lowermost node has the max number
 int KNCube::_LeftNode( int node, int dim )
 {
   int k_to_dim = powi( _k, dim );
@@ -192,7 +192,7 @@ int KNCube::_LeftNode( int node, int dim )
   int left_node;
   // if at the left edge of the dimension, wraparound within this dimension
   if ( loc_in_dim == 0 ) {
-    left_node = node + (_k-1)*k_to_dim;
+    left_node = node + (_k-1)*k_to_dim;//we can move right by _k-1 steps to get the wraparound left node
   } else {
     left_node = node - k_to_dim;
   }
@@ -272,30 +272,30 @@ void KNCube::InsertRandomFaults( const Configuration &config )
       int t;
 
       for ( t = 0; ( t < _size ) && (!available); ++t ) {
-	node = ( j + t ) % _size;
-       
-	if ( !fail_nodes[node] ) {
-	  // check neighbors
-	  int c = RandomInt( 2*_n - 1 );
+		node = ( j + t ) % _size;
+	       
+		if ( !fail_nodes[node] ) {
+		  // check neighbors
+		  int c = RandomInt( 2*_n - 1 );
 
-	  for ( int n = 0; ( n < 2*_n ) && (!available); ++n ) {
-	    chan = ( n + c ) % 2*_n;
+		  for ( int n = 0; ( n < 2*_n ) && (!available); ++n ) {
+		    chan = ( n + c ) % 2*_n;
 
-	    if ( chan % 1 ) {
-	      available = fail_nodes[_LeftNode( node, chan/2 )];
-	    } else {
-	      available = fail_nodes[_RightNode( node, chan/2 )];
-	    }
-	  }
-	}
-	
-	if ( !available ) {
-	  cout << "skipping " << node << endl;
-	}
+		    if ( chan % 1 ) {
+		      available = fail_nodes[_LeftNode( node, chan/2 )];
+		    } else {
+		      available = fail_nodes[_RightNode( node, chan/2 )];
+		    }
+		  }
+		}
+		
+		if ( !available ) {
+		  cout << "skipping " << node << endl;
+		}
       }
 
       if ( t == _size ) {
-	Error( "Could not find another possible fault channel" );
+		Error( "Could not find another possible fault channel" );
       }
 
       
@@ -303,8 +303,8 @@ void KNCube::InsertRandomFaults( const Configuration &config )
       fail_nodes[node] = true;
 
       for ( int n = 0; ( n < _n ) && available ; ++n ) {
-	fail_nodes[_LeftNode( node, n )]  = true;
-	fail_nodes[_RightNode( node, n )] = true;
+		fail_nodes[_LeftNode( node, n )]  = true;
+		fail_nodes[_RightNode( node, n )] = true;
       }
 
       cout << "failure at node " << node << ", channel " 

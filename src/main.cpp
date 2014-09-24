@@ -88,7 +88,7 @@ int gNodes;
 //generate nocviewer trace
 bool gTrace;
 
-ostream * gWatchOut;
+ostream * gWatchOut;	//ostream to output watchout information
 
 
 

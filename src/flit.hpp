@@ -48,17 +48,17 @@ public:
 
   int vc;
 
-  int cl;
+  int cl;		//class?
 
   bool head;
   bool tail;
   
-  int  ctime;
-  int  itime;
-  int  atime;
+  int  ctime;	//creat time
+  int  itime;	//
+  int  atime;	//access time
 
   int  id;
-  int  pid;
+  int  pid;		//packet id
 
   bool record;
 
