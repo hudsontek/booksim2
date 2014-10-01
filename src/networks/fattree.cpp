@@ -80,8 +80,8 @@ void FatTree::_ComputeSize( const Configuration& config )
   _size = _n * powi( _k , _n - 1 );	//is this correct?
 
   //(channels per level = k*routers_per_level* up/down) * (levels-1)
-  _channels = (2*_k * powi( _k , _n-1 ))*(_n-1);	//is this correct?
-  
+  _channels = (2*_k * powi( _k , _n-1 ))*(_n-1);	//we only count the out channels from one switch. every switch has k channels up and k channels down, each layer has powi( _k , _n-1 ) switches, there are _n switch layers,
+  //but the first layer has only down links, the the last layer has only up links, which makes the total channel count equal to that of (_n-1) normal switch layers
 
 }
 
@@ -121,7 +121,7 @@ void FatTree::_BuildNet( const Configuration& config )
       name.str("");
       name << "router_level" << level << "_" << pos;
       Router * r = Router::NewRouter( config, this, name.str( ), id,
-				      degree, degree );
+				      degree, degree );	//we instatiate the router here, but not in _Alloc(), because the "id", "inputs", "outputs" field is unknown then.
       _Router( level, pos ) = r;
       _timed_modules.push_back(r);
     }

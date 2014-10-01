@@ -162,7 +162,7 @@ void KNCube::_BuildNet( const Configuration &config )
     _routers[node]->AddInputChannel( _inject[node], _inject_cred[node] );
     _routers[node]->AddOutputChannel( _eject[node], _eject_cred[node] );
     _inject[node]->SetLatency( 1 );
-    _eject[node]->SetLatency( 1 );
+    _eject[node]->SetLatency( 1 );//why credit channel's latency is not set?
   }
 }
 //the channels are numbered in this way: node 0's right channel in dimension 0 is 0, left is 1, right channel in dimension 1 is 2...node 1's right channel in dimension 0 is 2*_n, left is 2*_n+1...
