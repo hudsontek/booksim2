@@ -50,7 +50,7 @@ public:
     static void RegisterRoutingFunctions();
     int getMeshN() const;
     int getMeshK() const;
-	int getFattreeK() const;
+	int getFattreeN() const;
 	int getFattreeK() const;
 }
 
