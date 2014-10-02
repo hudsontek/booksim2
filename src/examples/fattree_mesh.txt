@@ -1,0 +1,2 @@
+topology = fattree_mesh
+traffic = uniform
