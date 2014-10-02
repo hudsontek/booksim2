@@ -188,6 +188,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
     //connect bridge channels to nodes in fattree's last layer
     int m2f_chan, f2m_chan;
     int mesh;
+    Router *r;
     for(int node = 0; node < fattree_switch_layer_width; ++node)//which node in last layer
     {
 	for(int node_port = 0; node_port < fattree_k; ++node_port)
@@ -197,10 +198,14 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	    {
 		m2f_chan = getMeshOutChannelID(mesh, iter->second);
 		f2m_chan = getMeshInChannelID(mesh, iter->second);
-		getFattreeNode(fattree_n - 1, node)->AddOutputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
-		getFattreeNode(fattree_n - 1, node)->AddInputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
-		getMeshNode(mesh, iter->first)->AddOutputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
-		getMeshNode(mesh, iter->first)->AddInputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
+
+		r = getFattreeNode(fattree_n - 1, node);
+		r->AddOutputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
+		r->AddInputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
+
+		r = getMeshNode(mesh, iter->first);
+		r->AddOutputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
+		r->AddInputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
 
 		_chan[m2f_chan]->SetLatency(1);
 		_chan[f2m_chan]->SetLatency(1);
