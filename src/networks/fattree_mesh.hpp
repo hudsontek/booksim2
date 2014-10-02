@@ -52,6 +52,6 @@ public:
     int getMeshK() const;
 	int getFattreeN() const;
 	int getFattreeK() const;
-}
+};
 
 #endif
