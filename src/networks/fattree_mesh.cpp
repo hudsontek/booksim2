@@ -35,13 +35,14 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     mesh_channels = mesh_nodes * mesh_n * 2;    //every node has 2 out channels within every dimension
     fattree_switch_layer_width = powi(fattree_k, fattree_n - 1);
     fattree_channels = (2 * fattree_k * fattree_switch_layer_width)
-	*(fattree_n - 1);	//since first level has only downside channels, and last level has only upside channels, 
+	*(fattree_n - 1);	//since first level has only downside channels, 
+    //and last level has only upside channels, 
     //the combined effect is equal to (fattree_n -1) intact switch layers
 
     _nodes = mesh_nodes * mesh_cnt;   //# of injecting/ejecting nodes. this variable will also be used to establish inject/eject channels
     _size = _nodes + fattree_n * fattree_switch_layer_width;    //# of routers/switches
-    _channels = mesh_channels*mesh_cnt +
-	fattree_channels + 2*mesh_outchannel_cnt*mesh_cnt;  //the UNIDIMENSIONAL channel count
+    _channels = mesh_channels * mesh_cnt 
+	+ fattree_channels + 2 * mesh_outchannel_cnt*mesh_cnt;  //the UNIDIMENSIONAL channel count
     //channels are numbered in this order: first is fattree's, 
     //then meshes's, then channels from mesh to fattree, 
     //at last is channels from fattree to mesh
@@ -289,16 +290,16 @@ int getFattreeNextLayerConnectedNodePort(int layer, int node, int port){
 //channels are numbered node by node, and dimension by dimension of the same node, 
 //and left is prior to right
 int getMeshLeftChannelID(int mesh_id, int node_id, int dim){
-    int base = fattree_channels + 
-	mesh_id * mesh_channels 
+    int base = fattree_channels 
+	+ mesh_id * mesh_channels 
 	+ 2 * mesh_n * node_id;
     int offset = 2 * dim;   //left is prior to right
     return base + offset;
 }
 
 int getMeshRightChannelID(int mesh_id, int node_id, int dim){
-    int base = fattree_channels + 
-	mesh_id * mesh_channels 
+    int base = fattree_channels 
+	+ mesh_id * mesh_channels 
 	+ 2 * mesh_n * node_id;
     int offset = 2 * dim + 1;
     return base + offset;
@@ -309,7 +310,7 @@ int getMeshRelativeLeftNodeID( int node_id, int dim){
     int loc_in_dim = (node_id / k_exp_dim ) % mesh_k;
     if(loc_in_dim == 0)	//wrap around to the rightmost node within this dim
 	return node_id + (mesh_k - 1)*k_exp_dim;
-    return node_id - k_exp_dim;
+    return node_id - k_exp_dim;	//left is prior to right
 }
 
 int getMeshRelativeRightNodeID( int node_id, int dim){
@@ -317,7 +318,7 @@ int getMeshRelativeRightNodeID( int node_id, int dim){
     int loc_in_dim = (node_id / k_exp_dim ) % mesh_k;
     if(loc_in_dim == mesh_k - 1)//wrap around to the leftmost node within this dim
 	return node_id - (mesh_k - 1)*k_exp_dim;
-    return node_id + k_exp_dim;
+    return node_id + k_exp_dim;	//left is prior to right
 }
 
 int getMeshOutChannelID(int mesh_id, int out_channel){
