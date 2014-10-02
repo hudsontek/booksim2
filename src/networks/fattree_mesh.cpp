@@ -35,7 +35,7 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     mesh_channels = mesh_nodes * mesh_n * 2;    //every node has 2 out channels within every dimension
     fattree_switch_layer_width = powi(fattree_k, fattree_n - 1);
     fattree_channels = (2 * fattree_k * fattree_switch_layer_width)
-	*(fattree_n-1);	//since first level has only downside channels, and last level has only upside channels, 
+	*(fattree_n - 1);	//since first level has only downside channels, and last level has only upside channels, 
     //the combined effect is equal to (fattree_n -1) intact switch layers
 
     _nodes = mesh_nodes * mesh_cnt;   //# of injecting/ejecting nodes. this variable will also be used to establish inject/eject channels
@@ -43,7 +43,8 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     _channels = mesh_channels*mesh_cnt +
 	fattree_channels + 2*mesh_outchannel_cnt*mesh_cnt;  //the UNIDIMENSIONAL channel count
     //channels are numbered in this order: first is fattree's, 
-    //then meshes's, at last is channels between fattree and mesh
+    //then meshes's, then channels from mesh to fattree, 
+    //at last is channels from fattree to mesh
 }
 
 void Fattree_mesh::_BuildNet(const Configuration &config){
@@ -57,22 +58,23 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
     //instantiate nodes in fattree
     for(int layer = 0;layer < fattree_n; ++layer)
     {
-	for(int pos = 0; pos < fattree_switch_layer_width; ++pos)
+	for(int node = 0; node < fattree_switch_layer_width; ++node)
 	{
-	    if(layer == 0)
+	    if(layer == 0)  //first layer has only downward channels
 		degree = fattree_k;
-	    else if(layer == fattree_n - 1)
+	    else if(layer == fattree_n - 1) //last layer's downward channels are bridge channels
 		degree = fattree_k + fattree_k * mesh_outchannel_cnt;
 	    else
 		degree = fattree_k * 2;
 
-	    node_ix = getFattreeNodeID(layer, pos);
+	    node_ix = getFattreeNodeID(layer, node);
 	    
 	    name.str("");//clear out the string
-	    name << "router_in_fattree:level_" << layer << "_" << pos;
+	    name << "router_in_fattree:level_" << layer << "_" << node;
 
-	    Router *r = Router::NewRouter( config, this, name.str( ), node_ix,degree, degree );
-	    getFattreeNode(layer, pos) = r;
+	    Router *r = Router::NewRouter( config, this, name.str( ), 
+		    node_ix,degree, degree );
+	    getFattreeNode(layer, node) = r;
 	    _timed_modules.push_back(r);
 
 	}
@@ -91,9 +93,6 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    chan_ix = getFattreeUpChannelID(layer, node, port);
 		    getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
 			    _chan_cred[chan_ix]);
-
-		    //connect in channel
-		    //whose out channel should i connect? connect to its which port?
 		}
 
 		if(layer < fattree_n - 1)//connect downside channels
@@ -103,13 +102,13 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
 			    _chan_cred[chan_ix]);
 
-		    //connect this out channel to the corresponding node in next layer
+		    //connect this out channel to the related node in next layer
 		    node_offset = getFattreeNextLayerConnectedNodeOffset(layer, node, port);
 		    node_port =	  getFattreeNextLayerConnectedNodePort(layer, node, port);
 		    getFattreeNode(layer + 1, node_offset)->AddInputChannel(_chan[chan_ix],
 			    _chan_cred[chan_ix]);
 
-		    //connect out channel of the corresponding node in next layer to this node
+		    //connect out channel of the related node in next layer to this node
 		    chan_ix = getFattreeUpChannelID(layer + 1, node_offset, node_port);
 		    getFattreeNode(layer, node)->AddInputChannel(_chan[chan_ix],
 			    _chan_cred[chan_ix]);
@@ -135,7 +134,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		name << "_" << (node / dim_offset) % mesh_k;
 	    }
 
-	    degree = 2 * mesh_n + 1;
+	    degree = 2 * mesh_n + 1;	//"1" is for the inject/eject channel
 	    iter = bridge_nodes.find(node);
 	    if(iter != bridge_nodes.end())  //this node will connect to fattree
 		degree += bridge_nodes.size();
@@ -170,7 +169,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		r->AddInputChannel(_chan[rinput],_chan_cred[rinput]);
 	    }
 	}//end of iteration in a mesh
-    }//end of iteration for every mesh
+    }//end of instantiate nodes in meshes
 
     //so far, we have neither attached bridge channels to fattree nor meshes
     generateBridgeNodeSet();
@@ -220,18 +219,25 @@ int getFattreeNodeID(int layer, int pos){
 }
 
 int getMeshNodeID(int mesh_id, int node_id){
-    return fattree_n * fattree_switch_layer_width + mesh_id * mesh_nodes + node_id;
+    return fattree_n * fattree_switch_layer_width 
+	+ mesh_id * mesh_nodes + node_id;
 }
 
 int getFattreeUpChannelID(int layer, int node, int pos){
-    assert(layer > 0 && node < fattree_switch_layer_width && pos < fattree_k);
+    assert(layer > 0 
+	    && node < fattree_switch_layer_width 
+	    && pos < fattree_k);
     int per_layer = fattree_k * fattree_switch_layer_width;
-    return pos + node * fattree_k + per_layer + (layer - 1) * per_layer * 2;
+    return pos + node * fattree_k 
+	+ per_layer + (layer - 1) * per_layer * 2;
 }
 
 int getFattreeDownChannelID(int layer, int node, int pos){
-    assert(layer < fattree_n - 1 && node < fattree_switch_layer_width && pos < fattree_k);
+    assert(layer < fattree_n - 1 
+	    && node < fattree_switch_layer_width 
+	    && pos < fattree_k);
     int per_layer = fattree_k * fattree_switch_layer_width;
+    //the DownChannelID is ahead of UpChannelID by per_layer
     return pos + node * fattree_k + layer * per_layer * 2;
 }
 
