@@ -93,6 +93,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    chan_ix = getFattreeUpChannelID(layer, node, port);
 		    getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
 			    _chan_cred[chan_ix]);
+		    _chan[chan_ix]->SetLatency(1);
+		    _chan_cred[chan_ix]->SetLatency(1);
 		}
 
 		if(layer < fattree_n - 1)//connect downside channels
@@ -101,6 +103,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    chan_ix = getFattreeDownChannelID(layer, node, port);
 		    getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
 			    _chan_cred[chan_ix]);
+		    _chan[chan_ix]->SetLatency(1);
+		    _chan_cred[chan_ix]->SetLatency(1);
 
 		    //connect this out channel to the related node in next layer
 		    node_offset = getFattreeNextLayerConnectedNodeOffset(layer, node, port);
@@ -167,6 +171,13 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		r->AddOutputChannel(_chan[routput], _chan_cred[routput]);
 		r->AddInputChannel(_chan[linput],_chan_cred[linput]);
 		r->AddInputChannel(_chan[rinput],_chan_cred[rinput]);
+
+		//set channel latency, no need for input channels because
+		//this node's input is other node's output
+		_chan[loutput]->SetLatency(1);
+		_chan[routput]->SetLatency(1);
+		_chan_cred[loutput]->SetLatency(1);
+		_chan_cred[routput]->SetLatency(1);
 	    }
 	}//end of iteration in a mesh
     }//end of instantiate nodes in meshes
@@ -190,6 +201,11 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		getFattreeNode(fattree_n - 1, node)->AddInputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
 		getMeshNode(mesh, iter->first)->AddOutputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
 		getMeshNode(mesh, iter->first)->AddInputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
+
+		_chan[m2f_chan]->SetLatency(1);
+		_chan[f2m_chan]->SetLatency(1);
+		_chan_cred[m2f_chan]->SetLatency(1);
+		_chan_cred[f2m_chan]->SetLatency(1);
 	    }
 	}
     }//end of connect bridge channels between fattree and meshes
