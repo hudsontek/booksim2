@@ -227,7 +227,8 @@ void generateBridgeNodeSet(void){
 }
 
 Router*& getFattreeNode(int layer, int pos){
-    return _routers[layer*fattree_switch_layer_width + pos];	//we number the fattree node first
+    return _routers[layer*fattree_switch_layer_width 
+	+ pos];	//we number the fattree node first
 }
 
 Router*& getMeshNode(int mesh_id, int node_id){
@@ -264,8 +265,8 @@ int getFattreeDownChannelID(int layer, int node, int pos){
 
 
 int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port){
-    assert(layer < fattree_n - 1 && 
-	    node < fattree_switch_layer_width 
+    assert(layer < fattree_n - 1 
+	    && node < fattree_switch_layer_width 
 	    && port < fattree_k);
     int size = powi(fattree_k, fattree_n - 2 - layer);	//how many nodes per cluster
     int cluster = (node / size) % fattree_k;	//which cluster this node belongs to
@@ -288,13 +289,17 @@ int getFattreeNextLayerConnectedNodePort(int layer, int node, int port){
 //channels are numbered node by node, and dimension by dimension of the same node, 
 //and left is prior to right
 int getMeshLeftChannelID(int mesh_id, int node_id, int dim){
-    int base = 2 * mesh_n * node_id + mesh_id * mesh_channels;
+    int base = fattree_channels + 
+	mesh_id * mesh_channels 
+	+ 2 * mesh_n * node_id;
     int offset = 2 * dim;   //left is prior to right
     return base + offset;
 }
 
 int getMeshRightChannelID(int mesh_id, int node_id, int dim){
-    int base = 2 * mesh_n * node_id + mesh_id * mesh_channels;
+    int base = fattree_channels + 
+	mesh_id * mesh_channels 
+	+ 2 * mesh_n * node_id;
     int offset = 2 * dim + 1;
     return base + offset;
 }
