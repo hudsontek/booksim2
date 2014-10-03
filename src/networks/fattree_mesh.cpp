@@ -337,9 +337,10 @@ int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel){
 
 //currently void
 void Fattree_mesh::RegisterRoutingFunctions(){
+
 }
 
-int Fatree_mesh::getMeshK() const
+int Fattree_mesh::getMeshK() const
 {
     return mesh_k;
 }
