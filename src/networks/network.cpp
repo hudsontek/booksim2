@@ -47,6 +47,7 @@
 #include "fattree.hpp"
 #include "anynet.hpp"
 #include "dragonfly.hpp"
+#include "fattree_mesh.hpp"
 
 
 Network::Network( const Configuration &config, const string & name ) :
