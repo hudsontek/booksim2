@@ -42,7 +42,8 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     _nodes = mesh_nodes * mesh_cnt;   //# of injecting/ejecting nodes. this variable will also be used to establish inject/eject channels
     _size = _nodes + fattree_n * fattree_switch_layer_width;    //# of routers/switches
     _channels = mesh_channels * mesh_cnt 
-	+ fattree_channels + 2 * mesh_outchannel_cnt*mesh_cnt;  //the UNIDIMENSIONAL channel count
+	+ fattree_channels 
+	+ 2 * mesh_outchannel_cnt * mesh_cnt;  //the UNIDIMENSIONAL channel count
     //channels are numbered in this order: first is fattree's, 
     //then meshes's, then channels from mesh to fattree, 
     //at last is channels from fattree to mesh
@@ -219,7 +220,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 }//end of _BuildNet()
 
 //currently this function is rather simple
-void generateBridgeNodeSet(void){
+void Fattree_mesh::generateBridgeNodeSet(void){
     assert(mesh_outchannel_cnt <= mesh_nodes);
     for(int ix = 0; ix < mesh_outchannel_cnt; ++ix)
     {
@@ -227,26 +228,26 @@ void generateBridgeNodeSet(void){
     }
 }
 
-Router*& getFattreeNode(int layer, int pos){
+Router*& Fattree_mesh::getFattreeNode(int layer, int pos){
     return _routers[layer*fattree_switch_layer_width 
 	+ pos];	//we number the fattree node first
 }
 
-Router*& getMeshNode(int mesh_id, int node_id){
+Router*& Fattree_mesh::getMeshNode(int mesh_id, int node_id){
     return _routers[fattree_n * fattree_switch_layer_width + 
 	mesh_id * mesh_nodes + node_id];
 }
 
-int getFattreeNodeID(int layer, int pos){
+int Fattree_mesh::getFattreeNodeID(int layer, int pos){
     return layer * fattree_switch_layer_width + pos;
 }
 
-int getMeshNodeID(int mesh_id, int node_id){
+int Fattree_mesh::getMeshNodeID(int mesh_id, int node_id){
     return fattree_n * fattree_switch_layer_width 
 	+ mesh_id * mesh_nodes + node_id;
 }
 
-int getFattreeUpChannelID(int layer, int node, int pos){
+int Fattree_mesh::getFattreeUpChannelID(int layer, int node, int pos){
     assert(layer > 0 
 	    && node < fattree_switch_layer_width 
 	    && pos < fattree_k);
@@ -255,7 +256,7 @@ int getFattreeUpChannelID(int layer, int node, int pos){
 	+ per_layer + (layer - 1) * per_layer * 2;
 }
 
-int getFattreeDownChannelID(int layer, int node, int pos){
+int Fattree_mesh::getFattreeDownChannelID(int layer, int node, int pos){
     assert(layer < fattree_n - 1 
 	    && node < fattree_switch_layer_width 
 	    && pos < fattree_k);
@@ -265,7 +266,7 @@ int getFattreeDownChannelID(int layer, int node, int pos){
 }
 
 
-int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port){
+int Fattree_mesh::getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port){
     assert(layer < fattree_n - 1 
 	    && node < fattree_switch_layer_width 
 	    && port < fattree_k);
@@ -275,7 +276,7 @@ int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port){
     return offset;
 }
 
-int getFattreeNextLayerConnectedNodePort(int layer, int node, int port){
+int Fattree_mesh::getFattreeNextLayerConnectedNodePort(int layer, int node, int port){
     assert(layer < fattree_n - 1 
 	    && node < fattree_switch_layer_width 
 	    && port < fattree_k);
@@ -289,7 +290,7 @@ int getFattreeNextLayerConnectedNodePort(int layer, int node, int port){
 //node 1's right channel in dimension 0 is 2*_n, left is 2*_n+1...
 //channels are numbered node by node, and dimension by dimension of the same node, 
 //and left is prior to right
-int getMeshLeftChannelID(int mesh_id, int node_id, int dim){
+int Fattree_mesh::getMeshLeftChannelID(int mesh_id, int node_id, int dim){
     int base = fattree_channels 
 	+ mesh_id * mesh_channels 
 	+ 2 * mesh_n * node_id;
@@ -297,7 +298,7 @@ int getMeshLeftChannelID(int mesh_id, int node_id, int dim){
     return base + offset;
 }
 
-int getMeshRightChannelID(int mesh_id, int node_id, int dim){
+int Fattree_mesh::getMeshRightChannelID(int mesh_id, int node_id, int dim){
     int base = fattree_channels 
 	+ mesh_id * mesh_channels 
 	+ 2 * mesh_n * node_id;
@@ -305,7 +306,7 @@ int getMeshRightChannelID(int mesh_id, int node_id, int dim){
     return base + offset;
 }
 
-int getMeshRelativeLeftNodeID( int node_id, int dim){
+int Fattree_mesh::getMeshRelativeLeftNodeID( int node_id, int dim){
     int k_exp_dim = powi(mesh_k, dim);
     int loc_in_dim = (node_id / k_exp_dim ) % mesh_k;
     if(loc_in_dim == 0)	//wrap around to the rightmost node within this dim
@@ -313,7 +314,7 @@ int getMeshRelativeLeftNodeID( int node_id, int dim){
     return node_id - k_exp_dim;	//left is prior to right
 }
 
-int getMeshRelativeRightNodeID( int node_id, int dim){
+int Fattree_mesh::getMeshRelativeRightNodeID( int node_id, int dim){
     int k_exp_dim = powi(mesh_k, dim);
     int loc_in_dim = (node_id / k_exp_dim ) % mesh_k;
     if(loc_in_dim == mesh_k - 1)//wrap around to the leftmost node within this dim
@@ -321,13 +322,13 @@ int getMeshRelativeRightNodeID( int node_id, int dim){
     return node_id + k_exp_dim;	//left is prior to right
 }
 
-int getMeshOutChannelID(int mesh_id, int out_channel){
+int Fattree_mesh::getMeshOutChannelID(int mesh_id, int out_channel){
     int base = fattree_channels + mesh_channels * mesh_cnt;
     int offset = mesh_id * mesh_outchannel_cnt + out_channel;
     return base + offset;
 }
 
-int getMeshInChannelID(int mesh_id, int out_channel){
+int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel){
     int base = fattree_channels + mesh_channels * mesh_cnt 
 	+ mesh_outchannel_cnt * mesh_cnt;
     int offset = mesh_id * mesh_outchannel_cnt + out_channel;
