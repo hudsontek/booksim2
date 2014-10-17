@@ -205,6 +205,11 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
 	for(int j = 0; j < _routers[i]->NumInputs(); ++j)
 	{
+		if(!_routers[i]->GetInputChannel(j))
+		{
+			cout << "\tnot available yet." << endl;
+			continue;
+		}
 	    cout << "\t" << _routers[i]->GetInputChannel(j)->Name() << endl;
 	}
 	cout << endl;
@@ -212,6 +217,11 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
 	for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
 	{
+		if(!_routers[i]->GetInputChannel(j))
+		{
+			cout << "\tnot available yet." << endl;
+			continue;
+		}
 	    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
 	}
 
