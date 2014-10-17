@@ -196,6 +196,29 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	}//end of iteration in a mesh
     }//end of instantiate nodes in meshes
 
+#ifdef _FATTREE_MESH_DEBUG_
+    //print out the topology
+    cout << "before the bridge channels are connected." << endl;
+
+    for(int i = 0; i < _size; ++i)
+    {
+	cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
+	for(int j = 0; j < _routers[i]->NumInputs(); ++j)
+	{
+	    cout << "\t" << _routers[i]->GetInputChannel(j)->Name() << endl;
+	}
+	cout << endl;
+
+	cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
+	for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
+	{
+	    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
+	}
+
+	cout << endl << endl;
+    }
+#endif
+
     //so far, we have neither attached bridge channels to fattree nor meshes
     generateBridgeNodeSet();
 
