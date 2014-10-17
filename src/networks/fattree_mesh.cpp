@@ -228,17 +228,19 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 
 #ifdef _FATTREE_MESH_DEBUG_
     //print out the topology
+    cout << "after the whole topology is completed." << endl;
+
     for(int i = 0; i < _size; ++i)
     {
-	cout << _routers[i]->Name() << "'s input channels:" << endl;
-	for(int j = 0; j < _routers[j]->NumInputs(); ++j)
+	cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
+	for(int j = 0; j < _routers[i]->NumInputs(); ++j)
 	{
 	    cout << "\t" << _routers[i]->GetInputChannel(j)->Name() << endl;
 	}
 	cout << endl;
 
-	cout << _routers[i]->Name() << "'s output channels:" << endl;
-	for(int j = 0; j < _routers[j]->NumOutputs(); ++j)
+	cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
+	for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
 	{
 	    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
 	}
