@@ -8,10 +8,10 @@
 #include "routefunc.hpp"
 #include <map>
 
-#define MESH_K 8
+#define MESH_K 2
 #define MESH_N 2
 #define FATTREE_K 2
-#define FATTREE_N 6
+#define FATTREE_N 2
 #define MESH_OUTCHANNEL_CNT 1
 
 class Fattree_mesh : public Network {
