@@ -47,6 +47,12 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     //channels are numbered in this order: first is fattree's, 
     //then meshes's, then channels from mesh to fattree, 
     //at last is channels from fattree to mesh
+
+#ifdef _FATTREE_MESH_DEBUG_
+    cout << "_nodes=" << _nodes << endl;
+    cout << "_size=" << _size << endl;
+    cout << "_channels=" << _channels << endl;
+#endif
 }
 
 void Fattree_mesh::_BuildNet(const Configuration &config){

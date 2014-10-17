@@ -50,7 +50,7 @@ protected:
 
   int _size;	//number of routers/switches
   int _nodes;	//number of nodes
-  int _channels;//number of unidirectional channels
+  int _channels;//number of unidirectional channels, not including inject/eject channels
   int _classes;
 
   vector<Router *> _routers;

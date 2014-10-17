@@ -77,7 +77,7 @@ void FatTree::_ComputeSize( const Configuration& config )
   _nodes = powi( _k, _n );
 
   //levels * routers_per_level
-  _size = _n * powi( _k , _n - 1 );	//is this correct?
+  _size = _n * powi( _k , _n - 1 );
 
   //(channels per level = k*routers_per_level* up/down) * (levels-1)
   _channels = (2*_k * powi( _k , _n-1 ))*(_n-1);	//we only count the out channels from one switch. every switch has k channels up and k channels down, each layer has powi( _k , _n-1 ) switches, there are _n switch layers,
