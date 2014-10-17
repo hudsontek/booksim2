@@ -2,7 +2,7 @@
 #ifndef _FATTREE_MESH_HPP_
 #define _FATTREE_MESH_HPP_
 
-#define _FATTREE_MESH_DEBUG_
+//#define _FATTREE_MESH_DEBUG_
 
 #include "network.hpp"
 #include "routefunc.hpp"

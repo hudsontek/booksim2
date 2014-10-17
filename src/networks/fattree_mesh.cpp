@@ -229,6 +229,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 
 	cout << endl << endl;
     }
+
+    cout << "======================================================" << endl;
 #endif
 
     //so far, we have neither attached bridge channels to fattree nor meshes
@@ -281,6 +283,9 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 
 	cout << endl << endl;
     }
+
+    cout << "======================================================" << endl;
+
 #endif
 
 }//end of _BuildNet()
