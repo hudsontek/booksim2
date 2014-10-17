@@ -227,7 +227,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
 	}
 
-	cout << endl << endl;
+	cout << "===============" << endl;
     }
 
     cout << "======================================================" << endl;
@@ -281,7 +281,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
 	}
 
-	cout << endl << endl;
+	cout << "===============" << endl;
     }
 
     cout << "======================================================" << endl;
