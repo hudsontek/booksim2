@@ -190,10 +190,10 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		_chan_cred[loutput]->SetLatency(1);
 		_chan_cred[routput]->SetLatency(1);
 
-		_chan[linput]->SetLatency(1);
-		_chan[rinput]->SetLatency(1);
-		_chan_cred[linput]->SetLatency(1);
-		_chan_cred[rinput]->SetLatency(1);
+//		_chan[linput]->SetLatency(1);
+//		_chan[rinput]->SetLatency(1);
+//		_chan_cred[linput]->SetLatency(1);
+//		_chan_cred[rinput]->SetLatency(1);
 	    }
 	}//end of iteration in a mesh
     }//end of instantiate nodes in meshes
