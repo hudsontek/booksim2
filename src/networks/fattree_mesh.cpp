@@ -149,7 +149,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	    degree = 2 * mesh_n + 1;	//"1" is for the inject/eject channel
 	    iter = bridge_nodes.find(node);
 	    if(iter != bridge_nodes.end())  //this node will connect to fattree
-		degree += bridge_nodes.size();
+//		degree += bridge_nodes.size();	//a bug is fixed here
+	    	degree += 1;	//"1" is for the channel connected to fattree
 
 	    Router *r = Router::NewRouter(config, this, name.str(), 
 		    getMeshNodeID(mesh, node), degree, degree);
