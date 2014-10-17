@@ -217,6 +217,27 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	}
     }//end of connect bridge channels between fattree and meshes
 
+#ifdef _FATTREE_MESH_DEBUG_
+    //print out the topology
+    for(int i = 0; i < _size; ++i)
+    {
+	cout << _routers[i]->Name() << "'s input channels:" << endl;
+	for(int j = 0; j < _routers[j]->NumInputs(); ++j)
+	{
+	    cout << "\t" << _routers[i]->GetInputChannel(j)->Name() << endl;
+	}
+	cout << endl;
+
+	cout << _routers[i]->Name() << "'s output channels:" << endl;
+	for(int j = 0; j < _routers[j]->NumOutputs(); ++j)
+	{
+	    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
+	}
+
+	cout << endl << endl;
+    }
+#endif
+
 }//end of _BuildNet()
 
 //currently this function is rather simple
@@ -335,7 +356,6 @@ int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel){
     return base + offset;
 }
 
-//currently void
 void Fattree_mesh::RegisterRoutingFunctions(){
     gRoutingFunctionMap["dor_nca_fattree_mesh"] = &dor_nca_fattree_mesh;
 }
@@ -360,7 +380,7 @@ int Fattree_mesh::getFattreeN() const
     return fattree_n;
 }
 
-
+//a dummy routing function
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
 	OutputSet *outputs, bool inject )
 {
