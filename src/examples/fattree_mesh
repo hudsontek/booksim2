@@ -1,2 +1,3 @@
 topology = fattree_mesh;
 traffic = uniform;
+routing_function = dor_nca;
