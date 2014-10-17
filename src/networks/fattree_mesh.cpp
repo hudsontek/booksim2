@@ -337,7 +337,7 @@ int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel){
 
 //currently void
 void Fattree_mesh::RegisterRoutingFunctions(){
-
+    gRoutingFunctionMap["dor_nca_fattree_mesh"] = &dor_nca_fattree_mesh;
 }
 
 int Fattree_mesh::getMeshK() const
