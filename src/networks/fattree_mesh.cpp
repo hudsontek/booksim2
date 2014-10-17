@@ -78,7 +78,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	    node_ix = getFattreeNodeID(layer, node);
 	    
 	    name.str("");//clear out the string
-	    name << "router_in_fattree:level_" << layer << "_" << node;
+	    name << "router_in_fattree:loc_" << layer << "_" << node;
 
 	    Router *r = Router::NewRouter( config, this, name.str( ), 
 		    node_ix,degree, degree );
@@ -139,7 +139,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 	for(int node = 0; node < mesh_nodes; ++node)
 	{
 	    name.str("");	//reset name string
-	    name << "mesh_" << mesh;
+	    name << "router_in_mesh_" << mesh << "_loc";
 	    for(int dim_offset = mesh_nodes / mesh_k; 
 		    dim_offset >= 1; dim_offset /= mesh_k)  //generate node name
 	    {

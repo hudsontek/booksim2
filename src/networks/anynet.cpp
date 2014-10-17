@@ -491,7 +491,7 @@ void AnyNet::readFile(){
   }
   sort(node_check.begin(), node_check.end());
   for(size_t i = 0; i<node_check.size(); i++){
-    if(node_check[i] != i){
+    if((unsigned)node_check[i] != i){	//modified to eliminate compile warnings
       cout<<"Anynet:booksim trafficmanager assumes sequential node numbering starting at 0\n";
       assert(false);
     }

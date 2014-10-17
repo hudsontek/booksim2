@@ -104,13 +104,13 @@ public:
  
   inline FlitChannel * GetInputChannel( int input ) const {
     assert((input >= 0) && (input < _inputs));
-    if(input >= _input_channels.size())	//newly added, if this occurs, we are requesting
+    if((unsigned)input >= _input_channels.size())	//newly added, if this occurs, we are requesting
     	return NULL;					//a channel that is not allocated by now
     return _input_channels[input];
   }
   inline FlitChannel * GetOutputChannel( int output ) const {
     assert((output >= 0) && (output < _outputs));
-    if(output >= _input_channels.size())//newly added, if this occurs, we are requesting
+    if((unsigned)output >= _input_channels.size())//newly added, if this occurs, we are requesting
 		return NULL;					//a channel that is not allocated by now
     return _output_channels[output];
   }
