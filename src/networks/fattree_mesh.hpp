@@ -54,4 +54,9 @@ public:
 	int getFattreeK() const;
 };
 
+//routing functions
+
+void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
+	OutputSet *outputs, bool inject ) ;
+
 #endif

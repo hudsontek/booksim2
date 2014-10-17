@@ -359,3 +359,9 @@ int Fattree_mesh::getFattreeN() const
 {
     return fattree_n;
 }
+
+
+void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
+	OutputSet *outputs, bool inject )
+{
+}
