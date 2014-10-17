@@ -305,10 +305,10 @@ bool IQRouter::_ReceiveFlits( )
 #endif
 
       if(f->watch) {
-	*gWatchOut << GetSimTime() << " | " << FullName() << " | "
-		   << "Received flit " << f->id
-		   << " from channel at input " << input
-		   << "." << endl;
+		*gWatchOut << GetSimTime() << " | " << FullName() << " | "
+			   << "Received flit " << f->id
+			   << " from channel at input " << input
+			   << "." << endl;
       }
       _in_queue_flits.insert(make_pair(input, f));
       activity = true;

@@ -4,3 +4,5 @@
 .Apple*
 .DS_Store
 *.swp
+.project
+.cproject

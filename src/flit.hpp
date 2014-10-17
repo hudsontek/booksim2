@@ -46,16 +46,16 @@ public:
                   ANY_TYPE      = 4 };
   FlitType type;
 
-  int vc;
+  int vc;		//virtual channel
 
-  int cl;		//class?
+  int cl;		//class
 
-  bool head;
-  bool tail;
+  bool head;	//whether this is a head flit
+  bool tail;	//whether this is a tail flit
   
   int  ctime;	//creat time
-  int  itime;	//
-  int  atime;	//access time
+  int  itime;	//inject time
+  int  atime;	//arrival time
 
   int  id;
   int  pid;		//packet id
@@ -63,12 +63,12 @@ public:
   bool record;
 
   int  src;
-  int  dest;
+  int  dest;	//destination node's id, only head flit has this value set
 
-  int  pri;
+  int  pri;		//priority, bigger means higher priority
 
   int  hops;
-  bool watch;
+  bool watch;	//whether to output verbose info of this flit
   int  subnetwork;
   
   // intermediate destination (if any)
@@ -81,7 +81,7 @@ public:
   void* data ;
 
   // Lookahead route info
-  OutputSet la_route_set;
+  OutputSet la_route_set; //lookahead route set
 
   void Reset();
 

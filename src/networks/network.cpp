@@ -215,7 +215,7 @@ void Network::WriteFlit( Flit *f, int source )
   assert( ( source >= 0 ) && ( source < _nodes ) );
   _inject[source]->Send(f);
 }
-
+//return the flit in incoming(eject) channel of node "dest"
 Flit *Network::ReadFlit( int dest )
 {
   assert( ( dest >= 0 ) && ( dest < _nodes ) );

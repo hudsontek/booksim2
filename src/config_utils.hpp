@@ -50,7 +50,7 @@ protected:
 public:
   Configuration();
 
-  void AddStrField(string const & field, string const & value);
+  void AddStrField(string const & field, string const & value);//not necessary
 
   void Assign(string const & field, string const & value);
   void Assign(string const & field, int value);

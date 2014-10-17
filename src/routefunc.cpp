@@ -569,13 +569,13 @@ int dor_next_mesh( int cur, int dest, bool descending )
 }
 
 //=============================================================
-
+//cur and dest are the IDs of current node's and destination node, respectively
 void dor_next_torus( int cur, int dest, int in_port,
 		     int *out_port, int *partition,
 		     bool balance = false )
 {
   int dim_left;
-  int dir;
+  int dir;	//direction
   int dist2;
 
   for ( dim_left = 0; dim_left < gN; ++dim_left ) {
@@ -593,39 +593,39 @@ void dor_next_torus( int cur, int dest, int in_port,
       
       if ( ( dist2 > 0 ) || 
 	   ( ( dist2 == 0 ) && ( RandomInt( 1 ) ) ) ) {
-	*out_port = 2*dim_left;     // Right
-	dir = 0;
+		*out_port = 2*dim_left;     // Right
+		dir = 0;
       } else {
-	*out_port = 2*dim_left + 1; // Left
-	dir = 1;
+		*out_port = 2*dim_left + 1; // Left
+		dir = 1;
       }
       
       if ( partition ) {
-	if ( balance ) {
-	  // Cray's "Partition" allocation
-	  // Two datelines: one between k-1 and 0 which forces VC 1
-	  //                another between ((k-1)/2) and ((k-1)/2 + 1) which 
-	  //                forces VC 0 otherwise any VC can be used
-	  
-	  if ( ( ( dir == 0 ) && ( cur > dest ) ) ||
-	       ( ( dir == 1 ) && ( cur < dest ) ) ) {
-	    *partition = 1;
-	  } else if ( ( ( dir == 0 ) && ( cur <= (gK-1)/2 ) && ( dest >  (gK-1)/2 ) ) ||
-		      ( ( dir == 1 ) && ( cur >  (gK-1)/2 ) && ( dest <= (gK-1)/2 ) ) ) {
-	    *partition = 0;
-	  } else {
-	    *partition = RandomInt( 1 ); // use either VC set
-	  }
-	} else {
-	  // Deterministic, fixed dateline between nodes k-1 and 0
-	  
-	  if ( ( ( dir == 0 ) && ( cur > dest ) ) ||
-	       ( ( dir == 1 ) && ( dest < cur ) ) ) {
-	    *partition = 1;
-	  } else {
-	    *partition = 0;
-	  }
-	}
+		if ( balance ) {
+		  // Cray's "Partition" allocation
+		  // Two datelines: one between k-1 and 0 which forces VC 1
+		  //                another between ((k-1)/2) and ((k-1)/2 + 1) which 
+		  //                forces VC 0 otherwise any VC can be used
+		  
+		  if ( ( ( dir == 0 ) && ( cur > dest ) ) ||
+		       ( ( dir == 1 ) && ( cur < dest ) ) ) {
+		    *partition = 1;
+		  } else if ( ( ( dir == 0 ) && ( cur <= (gK-1)/2 ) && ( dest >  (gK-1)/2 ) ) ||
+			      ( ( dir == 1 ) && ( cur >  (gK-1)/2 ) && ( dest <= (gK-1)/2 ) ) ) {
+		    *partition = 0;
+		  } else {
+		    *partition = RandomInt( 1 ); // use either VC set
+		  }
+		} else {
+		  // Deterministic, fixed dateline between nodes k-1 and 0
+		  
+		  if ( ( ( dir == 0 ) && ( cur > dest ) ) ||
+		       ( ( dir == 1 ) && ( dest < cur ) ) ) {
+		    *partition = 1;
+		  } else {
+		    *partition = 0;
+		  }
+		}
       }
     } else {
       // Inverting the least significant bit keeps
@@ -1541,11 +1541,11 @@ void dim_order_torus( const Router *r, const Flit *f, int in_channel,
 
   } else {
     
-    int cur  = r->GetID( );
-    int dest = f->dest;
+    int cur  = r->GetID( );	//current node's ID
+    int dest = f->dest;		//destination node's ID
 
     dor_next_torus( cur, dest, in_channel,
-		    &out_port, &f->ph, false );
+		    &out_port, &f->ph, false );	//last bool is whether balance
 
 
     // at the destination router, we don't need to separate VCs by ring partition
@@ -1555,9 +1555,9 @@ void dim_order_torus( const Router *r, const Flit *f, int in_channel,
       assert(available_vcs > 0);
 
       if ( f->ph == 0 ) {
-	vcEnd -= available_vcs;
+		vcEnd -= available_vcs;
       } else {
-	vcBegin += available_vcs;
+		vcBegin += available_vcs;
       } 
     }
 

@@ -65,7 +65,7 @@ protected:
 
   // ============ Traffic ============ 
 
-  int    _classes;
+  int    _classes;	//how many classes there are
 
   vector<double> _load;
 
@@ -79,7 +79,7 @@ protected:
 
   vector<string> _traffic;
 
-  vector<int> _class_priority;
+  vector<int> _class_priority;	//record every class's priority
 
   vector<vector<int> > _last_class;
 
@@ -94,7 +94,7 @@ protected:
 
   // ============ Injection VC states  ============ 
 
-  vector<vector<BufferState *> > _buf_states;
+  vector<vector<BufferState *> > _buf_states;	//index: node, subnet
 #ifdef TRACK_FLOWS
   vector<vector<vector<int> > > _outstanding_credits;
   vector<vector<vector<queue<int> > > > _outstanding_classes;
@@ -103,22 +103,22 @@ protected:
 
   // ============ Routing ============ 
 
-  tRoutingFunction _rf;
+  tRoutingFunction _rf;//( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
   bool _lookahead_routing;
-  bool _noq;
+  bool _noq;	//whether to use next-hop output queuing
 
   // ============ Injection queues ============ 
 
-  vector<vector<int> > _qtime;
+  vector<vector<int> > _qtime;	//a data structure related to delayed injection process, index:node, class
   vector<vector<bool> > _qdrained;
-  vector<vector<list<Flit *> > > _partial_packets;
+  vector<vector<list<Flit *> > > _partial_packets;	//every node's to-be-sent flits, index: node, class
 
-  vector<map<int, Flit *> > _total_in_flight_flits;
-  vector<map<int, Flit *> > _measured_in_flight_flits;
-  vector<map<int, Flit *> > _retired_packets;
-  bool _empty_network;
+  vector<map<int, Flit *> > _total_in_flight_flits;	//store every flit in flight, index: class, flit_id->flit *
+  vector<map<int, Flit *> > _measured_in_flight_flits;	//store every in-flight flit needed to be measured, index: same as above
+  vector<map<int, Flit *> > _retired_packets;	//index:class, packet_id
+  bool _empty_network;	//whether to drain the flits
 
-  bool _hold_switch_for_packet;
+  bool _hold_switch_for_packet;	//whether to hold a switch config for the entire packet
 
   // ============ physical sub-networks ==========
 
@@ -133,33 +133,33 @@ protected:
 
   // ============ request & replies ==========================
 
-  vector<int> _packet_seq_no;
-  vector<list<PacketReplyInfo*> > _repliesPending;
-  vector<int> _requestsOutstanding;
+  vector<int> _packet_seq_no;	//packet's seq no. within every node
+  vector<list<PacketReplyInfo*> > _repliesPending;	//records pending replies, index: node
+  vector<int> _requestsOutstanding;	//# of pending request of a node
 
   // ============ Statistics ============
-
-  vector<Stats *> _plat_stats;     
+  //the meaning of these variables is indicated @692~702 in trafficmanager.cpp
+  vector<Stats *> _plat_stats;	//packet latency(including queuing latency)
   vector<double> _overall_min_plat;  
   vector<double> _overall_avg_plat;  
   vector<double> _overall_max_plat;  
 
-  vector<Stats *> _nlat_stats;     
+  vector<Stats *> _nlat_stats;	//network latency(without queuing latency)
   vector<double> _overall_min_nlat;  
   vector<double> _overall_avg_nlat;  
   vector<double> _overall_max_nlat;  
 
-  vector<Stats *> _flat_stats;     
+  vector<Stats *> _flat_stats;	//flit latency(without queuing latency)
   vector<double> _overall_min_flat;  
   vector<double> _overall_avg_flat;  
   vector<double> _overall_max_flat;  
 
-  vector<Stats *> _frag_stats;
+  vector<Stats *> _frag_stats;	//fragment latency??
   vector<double> _overall_min_frag;
   vector<double> _overall_avg_frag;
   vector<double> _overall_max_frag;
 
-  vector<vector<Stats *> > _pair_plat;
+  vector<vector<Stats *> > _pair_plat;	//index:class, ix(=src*_nodes + dest)
   vector<vector<Stats *> > _pair_nlat;
   vector<vector<Stats *> > _pair_flat;
 
@@ -170,7 +170,7 @@ protected:
   vector<double> _overall_min_sent_packets;
   vector<double> _overall_avg_sent_packets;
   vector<double> _overall_max_sent_packets;
-  vector<vector<int> > _accepted_packets;
+  vector<vector<int> > _accepted_packets;	//record # of every class' accepted/ejected? packet for each node
   vector<double> _overall_min_accepted_packets;
   vector<double> _overall_avg_accepted_packets;
   vector<double> _overall_max_accepted_packets;
@@ -178,7 +178,7 @@ protected:
   vector<double> _overall_min_sent;
   vector<double> _overall_avg_sent;
   vector<double> _overall_max_sent;
-  vector<vector<int> > _accepted_flits;
+  vector<vector<int> > _accepted_flits;	//record # of every class' accepted/ejected? flit for each node
   vector<double> _overall_min_accepted;
   vector<double> _overall_avg_accepted;
   vector<double> _overall_max_accepted;
@@ -208,7 +208,7 @@ protected:
 
   bool _measure_latency;
 
-  int   _reset_time;
+  int   _reset_time;	//the time when statistics are resetted
   int   _drain_time;	//the time when drain process starts
 
   int   _total_sims;
@@ -216,7 +216,7 @@ protected:
   int   _max_samples;
   int   _warmup_periods;
 
-  int   _include_queuing;
+  int   _include_queuing; //whether to include source queuing latency
 
   vector<int> _measure_stats;
   bool _pair_stats;
@@ -229,9 +229,9 @@ protected:
   vector<double> _warmup_threshold;
   vector<double> _acc_warmup_threshold;
 
-  int _cur_id;
-  int _cur_pid;
-  int _time;	//current time of the simulator
+  int _cur_id;	//current flit's id
+  int _cur_pid;	//current packet's id
+  int _time;	//current time of the simulator, modified in _Step()
 
   set<int> _flits_to_watch;
   set<int> _packets_to_watch;

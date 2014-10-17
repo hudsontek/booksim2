@@ -86,7 +86,7 @@ BookSimConfig::BookSimConfig( )
   _int_map["credit_delay"] = 0;
   _float_map["internal_speedup"] = 1.0;
 
-  //with switch speedup flits requires output buffering
+  //with switch speedup, flits requires output buffering
   //full output buffer will cancel switch allocation requests
   //default setting is unlimited
   _int_map["output_buffer_size"] = -1;
@@ -186,7 +186,7 @@ BookSimConfig::BookSimConfig( )
 
   _int_map["batch_size"] = 1000;
   _int_map["batch_count"] = 1;
-  _int_map["max_outstanding_requests"] = 0; // 0 = unlimited
+  _int_map["max_outstanding_requests"] = 0; // 0 = unlimited outstanding=pending
 
   // Use read/write request reply scheme
   _int_map["use_read_write"] = 0;
@@ -265,7 +265,7 @@ BookSimConfig::BookSimConfig( )
   //_int_map["flit_timing"]     = 0;  // know what you're doing
   //_int_map["split_packets"]   = 0;  // know what you're doing
 
-  _int_map["seed"]            = 0; //random seed for simulation, e.g. traffic 
+  _int_map["seed"] = 0; //random seed for simulation, e.g. traffic 
   AddStrField("seed", ""); // workaround to allow special "time" value
 
   _int_map["print_activity"] = 0;

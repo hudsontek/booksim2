@@ -105,7 +105,7 @@ bool Simulate( BookSimConfig const & config )
   net.resize(subnets);
   for (int i = 0; i < subnets; ++i) {
     ostringstream name;
-    name << "network_" << i;
+    name << "network_" << i;	//FIXME:bug here! name is not resetted
     net[i] = Network::New( config, name.str() );
   }
 

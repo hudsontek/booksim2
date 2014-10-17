@@ -158,16 +158,16 @@ class BufferState : public Module {
   
   bool _wait_for_tail_credit;
   int  _size;
-  int  _occupancy;
+  int  _occupancy;	//how many buffer items are occupied
   vector<int> _vc_occupancy;
   int  _vcs;
   
   BufferPolicy * _buffer_policy;
   
   vector<int> _in_use_by;
-  vector<bool> _tail_sent;
-  vector<int> _last_id;
-  vector<int> _last_pid;
+  vector<bool> _tail_sent;	//record if a vc has sent a tail flit, index:vc
+  vector<int> _last_id;	//last flit's id
+  vector<int> _last_pid;//last packet's id
 
 #ifdef TRACK_BUFFERS
   int _classes;

@@ -568,7 +568,7 @@ BufferState::~BufferState()
 {
   delete _buffer_policy;
 }
-
+//free the buffer item(s) occupied by a sended flit
 void BufferState::ProcessCredit( Credit const * const c )
 {
   assert( c );
@@ -586,7 +586,7 @@ void BufferState::ProcessCredit( Credit const * const c )
       err << "Received credit for idle VC " << vc;
       Error( err.str() );
     }
-    --_occupancy;
+    --_occupancy;	//once a credit is received, the buffer item occupied by a sended flit can be released
     if(_occupancy < 0) {
       Error("Buffer occupancy fell below zero.");
     }
@@ -610,27 +610,27 @@ void BufferState::ProcessCredit( Credit const * const c )
     --_class_occupancy[cl];
 #endif
 
-    _buffer_policy->FreeSlotFor(vc);
+    _buffer_policy->FreeSlotFor(vc);//currently void
 
     ++iter;
   }
 }
 
-
+//this function is in pair with ProcessCredit( )
 void BufferState::SendingFlit( Flit const * const f )
 {
   int const vc = f->vc;
 
   assert( f && ( vc >= 0 ) && ( vc < _vcs ) );
 
-  ++_occupancy;
+  ++_occupancy;	//buffer will be kept until a credit is received
   if(_occupancy > _size) {
     Error("Buffer overflow.");
   }
 
   ++_vc_occupancy[vc];
   
-  _buffer_policy->SendingFlit(f);
+  _buffer_policy->SendingFlit(f);	//void now
   
 #ifdef TRACK_BUFFERS
   _outstanding_classes[vc].push(f->cl);
@@ -648,7 +648,7 @@ void BufferState::SendingFlit( Flit const * const f )
   _last_id[vc] = f->id;
   _last_pid[vc] = f->pid;
 }
-
+//mark the buffer that it's used by virtual channel 'vc'
 void BufferState::TakeBuffer( int vc, int tag )
 {
   assert( ( vc >= 0 ) && ( vc < _vcs ) );
@@ -660,7 +660,7 @@ void BufferState::TakeBuffer( int vc, int tag )
   }
   _in_use_by[vc] = tag;
   _tail_sent[vc] = false;
-  _buffer_policy->TakeBuffer(vc);
+  _buffer_policy->TakeBuffer(vc);	//void now
 }
 
 void BufferState::Display( ostream & os ) const
