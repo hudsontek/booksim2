@@ -134,6 +134,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
     int linput, rinput, loutput, routput, lnode, rnode;
 
     //instantiate nodes in every mesh, and attach channels to them
+    generateBridgeNodeSet();
+
     for(int mesh = 0; mesh < mesh_cnt; ++mesh)
     {
 	for(int node = 0; node < mesh_nodes; ++node)
@@ -230,7 +232,6 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 #endif
 
     //so far, we have neither attached bridge channels to fattree nor meshes
-    generateBridgeNodeSet();
 
     //connect bridge channels to nodes in fattree's last layer
     int m2f_chan, f2m_chan;
