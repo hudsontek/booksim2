@@ -3,6 +3,7 @@
 #define _FATTREE_MESH_HPP_
 
 #include "network.hpp"
+#include "routefunc.hpp"
 #include <map>
 
 #define MESH_K 8
