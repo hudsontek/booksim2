@@ -166,8 +166,8 @@ class BufferState : public Module {
   
   vector<int> _in_use_by;
   vector<bool> _tail_sent;	//record if a vc has sent a tail flit, index:vc
-  vector<int> _last_id;	//last flit's id
-  vector<int> _last_pid;//last packet's id
+  vector<int> _last_id;	//last flit's id through this vc, index:vc
+  vector<int> _last_pid;//last packet's id through this vc, index:vc
 
 #ifdef TRACK_BUFFERS
   int _classes;

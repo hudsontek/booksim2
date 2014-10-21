@@ -51,9 +51,9 @@ class TrafficManager : public Module {
 
 private:
 
-  vector<vector<int> > _packet_size;
-  vector<vector<int> > _packet_size_rate;
-  vector<int> _packet_size_max_val;
+  vector<vector<int> > _packet_size;	//size sequence of a class' packets
+  vector<vector<int> > _packet_size_rate;	//rate sequence of a class's packets
+  vector<int> _packet_size_max_val;	//aggregate rate of a class's packets
 
 protected:
   int _nodes;
@@ -61,15 +61,15 @@ protected:
   int _vcs;
 
   vector<Network *> _net;
-  vector<vector<Router *> > _router;
+  vector<vector<Router *> > _router;	//index:subnet, router_id
 
   // ============ Traffic ============ 
 
   int    _classes;	//how many classes there are
 
-  vector<double> _load;
+  vector<double> _load;	//injection rate of a class
 
-  vector<int> _use_read_write;
+  vector<int> _use_read_write;	//whether a class uses read-write, index:class
   vector<double> _write_fraction;
 
   vector<int> _read_request_size;
@@ -81,7 +81,7 @@ protected:
 
   vector<int> _class_priority;	//record every class's priority
 
-  vector<vector<int> > _last_class;
+  vector<vector<int> > _last_class;	//index: node, subnet
 
   vector<TrafficPattern *> _traffic_pattern;
   vector<InjectionProcess *> _injection_process;
@@ -99,7 +99,7 @@ protected:
   vector<vector<vector<int> > > _outstanding_credits;
   vector<vector<vector<queue<int> > > > _outstanding_classes;
 #endif
-  vector<vector<vector<int> > > _last_vc;
+  vector<vector<vector<int> > > _last_vc;	//last vc used by a class. index: node, subnet, class
 
   // ============ Routing ============ 
 
@@ -110,13 +110,13 @@ protected:
   // ============ Injection queues ============ 
 
   vector<vector<int> > _qtime;	//a data structure related to delayed injection process, index:node, class
-  vector<vector<bool> > _qdrained;
+  vector<vector<bool> > _qdrained;	//index: node, class
   vector<vector<list<Flit *> > > _partial_packets;	//every node's to-be-sent flits, index: node, class
 
   vector<map<int, Flit *> > _total_in_flight_flits;	//store every flit in flight, index: class, flit_id->flit *
   vector<map<int, Flit *> > _measured_in_flight_flits;	//store every in-flight flit needed to be measured, index: same as above
   vector<map<int, Flit *> > _retired_packets;	//index:class, packet_id
-  bool _empty_network;	//whether to drain the flits
+  bool _empty_network;	//whether the draining process is started
 
   bool _hold_switch_for_packet;	//whether to hold a switch config for the entire packet
 
@@ -124,7 +124,7 @@ protected:
 
   int _subnets;
 
-  vector<int> _subnet;
+  vector<int> _subnet;	//subnet amount can't exceed packet type amount
 
   // ============ deadlock ==========
 
@@ -166,19 +166,19 @@ protected:
   vector<Stats *> _hop_stats;
   vector<double> _overall_hop_stats;
 
-  vector<vector<int> > _sent_packets;
+  vector<vector<int> > _sent_packets;	//index:class, node
   vector<double> _overall_min_sent_packets;
   vector<double> _overall_avg_sent_packets;
   vector<double> _overall_max_sent_packets;
-  vector<vector<int> > _accepted_packets;	//record # of every class' accepted/ejected? packet for each node
+  vector<vector<int> > _accepted_packets;	//record # of every class' accepted/ejected? packet for each node. index:class, node
   vector<double> _overall_min_accepted_packets;
   vector<double> _overall_avg_accepted_packets;
   vector<double> _overall_max_accepted_packets;
-  vector<vector<int> > _sent_flits;
+  vector<vector<int> > _sent_flits;	//index:class, node
   vector<double> _overall_min_sent;
   vector<double> _overall_avg_sent;
   vector<double> _overall_max_sent;
-  vector<vector<int> > _accepted_flits;	//record # of every class' accepted/ejected? flit for each node
+  vector<vector<int> > _accepted_flits;	//record # of every class' accepted/ejected? flit for each node. index:class, node
   vector<double> _overall_min_accepted;
   vector<double> _overall_avg_accepted;
   vector<double> _overall_max_accepted;
@@ -196,8 +196,8 @@ protected:
   vector<double> _overall_crossbar_conflict_stalls;
 #endif
 
-  vector<int> _slowest_packet;
-  vector<int> _slowest_flit;
+  vector<int> _slowest_packet;	//index:class
+  vector<int> _slowest_flit;	//index:class
 
   map<string, Stats *> _stats;
 

@@ -39,10 +39,10 @@ class Stats : public Module {
   double _min;
   double _max;
 
-  int    _num_bins;
-  double _bin_size;
+  int    _num_bins;	//how many bins
+  double _bin_size;	//size of a bin
 
-  vector<int> _hist;
+  vector<int> _hist;	//how many samples there are in a bin
 
 public:
   Stats( Module *parent, const string &name,

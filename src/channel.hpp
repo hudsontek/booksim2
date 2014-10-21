@@ -70,7 +70,7 @@ protected:
   int _delay;
   T * _input;
   T * _output;
-  queue<pair<int, T *> > _wait_queue;
+  queue<pair<int, T *> > _wait_queue;	//pair's first element is when this data will reach the output port
 
 };
 

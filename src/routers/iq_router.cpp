@@ -2249,12 +2249,12 @@ void IQRouter::_SendFlits( )
 #endif
 
       if(f->watch)
-	*gWatchOut << GetSimTime() << " | " << FullName() << " | "
-		    << "Sending flit " << f->id
-		    << " to channel at output " << output
-		    << "." << endl;
+		*gWatchOut << GetSimTime() << " | " << FullName() << " | "
+				<< "Sending flit " << f->id
+				<< " to channel at output " << output
+				<< "." << endl;
       if(gTrace) {
-	cout << "Outport " << output << endl << "Stop Mark" << endl;
+    	  cout << "Outport " << output << endl << "Stop Mark" << endl;
       }
       _output_channels[output]->Send( f );
     }

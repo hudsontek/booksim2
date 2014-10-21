@@ -33,8 +33,8 @@
 #include "booksim.hpp"
 #include "credit.hpp"
 
-stack<Credit *> Credit::_all;
-stack<Credit *> Credit::_free;
+stack<Credit *> Credit::_all;	//global variable
+stack<Credit *> Credit::_free;	//global variable
 
 Credit::Credit()
 {

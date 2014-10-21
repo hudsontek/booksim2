@@ -585,10 +585,10 @@ void dor_next_torus( int cur, int dest, int in_port,
   
   if ( dim_left < gN ) {
 
-    if ( (in_port/2) != dim_left ) {
+    if ( (in_port/2) != dim_left ) {	//(in_port/2) is the current dimension
       // Turning into a new dimension
 
-      cur %= gK; dest %= gK;
+      cur %= gK; dest %= gK;	//useless?
       dist2 = gK - 2 * ( ( dest - cur + gK ) % gK );
       
       if ( ( dist2 > 0 ) || 

@@ -27,8 +27,8 @@
 
 #include "packet_reply_info.hpp"
 
-stack<PacketReplyInfo*> PacketReplyInfo::_all;
-stack<PacketReplyInfo*> PacketReplyInfo::_free;
+stack<PacketReplyInfo*> PacketReplyInfo::_all;	//global variable
+stack<PacketReplyInfo*> PacketReplyInfo::_free;	//global variable
 
 PacketReplyInfo * PacketReplyInfo::New()
 {
