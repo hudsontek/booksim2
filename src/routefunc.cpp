@@ -73,7 +73,7 @@ int gWriteReplyBeginVC, gWriteReplyEndVC;
 //  QTree: Nearest Common Ancestor
 // ===
 void qtree_nca( const Router *r, const Flit *f,
-		int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
+		int in_channel, OutputSet* outputs, bool inject, const Network *net1=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -124,7 +124,7 @@ void qtree_nca( const Router *r, const Flit *f,
 //  Tree4: Nearest Common Ancestor w/ Adaptive Routing Up
 // ===
 void tree4_anca( const Router *r, const Flit *f,
-		 int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
+		 int in_channel, OutputSet* outputs, bool inject, const Network *net1=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -194,7 +194,7 @@ void tree4_anca( const Router *r, const Flit *f,
 //  Tree4: Nearest Common Ancestor w/ Random Routing Up
 // ===
 void tree4_nca( const Router *r, const Flit *f,
-		int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
+		int in_channel, OutputSet* outputs, bool inject, const Network *net1=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -257,7 +257,7 @@ void tree4_nca( const Router *r, const Flit *f,
 //  FATTREE: Nearest Common Ancestor w/ Random  Routing Up
 // ===
 void fattree_nca( const Router *r, const Flit *f,
-               int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
+               int in_channel, OutputSet* outputs, bool inject, const Network *net1=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -321,7 +321,7 @@ void fattree_nca( const Router *r, const Flit *f,
 //  FATTREE: Nearest Common Ancestor w/ Adaptive Routing Up
 // ===
 void fattree_anca( const Router *r, const Flit *f,
-                int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
+                int in_channel, OutputSet* outputs, bool inject, const Network *net1=NULL)
 {
 
   int vcBegin = 0, vcEnd = gNumVCs-1;
@@ -402,7 +402,7 @@ void fattree_anca( const Router *r, const Flit *f,
 int dor_next_mesh( int cur, int dest, bool descending = false );
 
 void adaptive_xy_yx_mesh( const Router *r, const Flit *f, 
-		 int in_channel, OutputSet *outputs, bool inject, Network *net=NULL)
+		 int in_channel, OutputSet *outputs, bool inject, const Network *net1=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -474,7 +474,7 @@ void adaptive_xy_yx_mesh( const Router *r, const Flit *f,
 }
 
 void xy_yx_mesh( const Router *r, const Flit *f, 
-		 int in_channel, OutputSet *outputs, bool inject, Network *net=NULL)
+		 int in_channel, OutputSet *outputs, bool inject, const Network *net1=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -640,7 +640,7 @@ void dor_next_torus( int cur, int dest, int in_port,
 
 //=============================================================
 
-void dim_order_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject, Network *net=NULL)
+void dim_order_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject, const Network *net1=NULL)
 {
   int out_port = inject ? -1 : dor_next_mesh( r->GetID( ), f->dest );
   
