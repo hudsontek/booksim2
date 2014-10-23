@@ -1076,7 +1076,7 @@ void TrafficManager::_Step( )
                         // first hop, we have to temporarily set cf's VC to be non-negative 
                         // in order to avoid triggering of an assertion in the routing function.
                         cf->vc = vc_start;
-                        _rf(router, cf, in_channel, &cf->la_route_set, false, _net[subnet]);
+                        _rf(router, cf, in_channel, &cf->la_route_set, false, router->pnet);	//change the last parameter from _net[subnet] to router->pnet
                         cf->vc = -1;
 
                         if(cf->watch) {
