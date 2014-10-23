@@ -275,7 +275,7 @@ void fattree_nca( const Router *r, const Flit *f,
   }
   assert(((f->vc >= vcBegin) && (f->vc <= vcEnd)) || (inject && (f->vc < 0)));
 
-  int out_port;
+  int out_port;	//index used by Router into the _input_channels & _output_channels
 
   if(inject) {
 
@@ -284,32 +284,32 @@ void fattree_nca( const Router *r, const Flit *f,
   } else {
     
     int dest = f->dest;
-    int router_id = r->GetID(); //routers are numbered with smallest at the top level
+    int router_id = r->GetID(); //routers are numbered with the smallest at the top level
     int routers_per_level = powi(gK, gN-1);
     int pos = router_id%routers_per_level;
     int router_depth  = router_id/ routers_per_level; //which level
-    int routers_per_neighborhood = powi(gK,gN-router_depth-1);
-    int router_neighborhood = pos/routers_per_neighborhood; //coverage of this tree
-    int router_coverage = powi(gK, gN-router_depth);  //span of the tree from this router
+    int routers_per_neighborhood = powi(gK,gN-router_depth-1);	//routers_per_cluster
+    int router_neighborhood = pos/routers_per_neighborhood; //which cluster does this router belongs to
+    int router_coverage = powi(gK, gN-router_depth);	//span of the tree from this router(how many terminal nodes there are in this subtree)
     
 
-    //NCA reached going down
+    //NCA reached, going down
     if(dest <(router_neighborhood+1)* router_coverage && 
-       dest >=router_neighborhood* router_coverage){
+       dest >=router_neighborhood* router_coverage){	//destination is in this subtree, whose root is the current router
       //down ports are numbered first
 
       //ejection
       if(router_depth == gN-1){
-	out_port = dest%gK;
+    	  out_port = dest%gK;
       } else {	
-	//find the down port for the destination
-	int router_branch_coverage = powi(gK, gN-(router_depth+1)); 
-	out_port = (dest-router_neighborhood* router_coverage)/router_branch_coverage;
+		//find the down port for the destination
+		int router_branch_coverage = powi(gK, gN-(router_depth+1));	//router_branch_coverage = router_coverage / gK; means how many terminal nodes can be reached from one port of the current router
+		out_port = (dest-router_neighborhood* router_coverage)/router_branch_coverage;	//dividend:relative position in this subtree
       }
-    } else {
+    } else {	//destination is in other subtree, must move up first
       //up ports are numbered last
       assert(in_channel<gK);//came from a up channel
-      out_port = gK+RandomInt(gK-1);
+      out_port = gK+RandomInt(gK-1);	//randomly choose an up channel
     }
   }  
   outputs->Clear( );
@@ -367,11 +367,11 @@ void fattree_anca( const Router *r, const Flit *f,
 
       //ejection
       if(router_depth == gN-1){
-	out_port = dest%gK;
+    	  out_port = dest%gK;
       } else {	
-	//find the down port for the destination
-	int router_branch_coverage = powi(gK, gN-(router_depth+1)); 
-	out_port = (dest-router_neighborhood* router_coverage)/router_branch_coverage;
+		//find the down port for the destination
+		int router_branch_coverage = powi(gK, gN-(router_depth+1));
+		out_port = (dest-router_neighborhood* router_coverage)/router_branch_coverage;
       }
     } else {
       //up ports are numbered last
@@ -380,9 +380,9 @@ void fattree_anca( const Router *r, const Flit *f,
       int random1 = RandomInt(gK-1); // Chose two ports out of the possible at random, compare loads, choose one.
       int random2 = RandomInt(gK-1);
       if (r->GetUsedCredit(out_port + random1) > r->GetUsedCredit(out_port + random2)){
-	out_port = out_port + random2;
+    	  out_port = out_port + random2;
       }else{
-	out_port =  out_port + random1;
+    	  out_port =  out_port + random1;
       }
     }
   }  
@@ -554,7 +554,7 @@ int dor_next_mesh( int cur, int dest, bool descending )
     dest = (dest * gK) / gNodes;
   } else {
     for ( dim_left = 0; dim_left < ( gN - 1 ); ++dim_left ) {
-      if ( ( cur % gK ) != ( dest % gK ) ) { break; }
+      if ( ( cur % gK ) != ( dest % gK ) ) { break; }	//cur and dest are not @ the same location within this dimension
       cur /= gK; dest /= gK;
     }
     cur %= gK;
@@ -588,8 +588,8 @@ void dor_next_torus( int cur, int dest, int in_port,
     if ( (in_port/2) != dim_left ) {	//(in_port/2) is the current dimension
       // Turning into a new dimension
 
-      cur %= gK; dest %= gK;	//useless?
-      dist2 = gK - 2 * ( ( dest - cur + gK ) % gK );
+      cur %= gK; dest %= gK;
+      dist2 = gK - 2 * ( ( dest - cur + gK ) % gK );	//a number indicating minimal distance and direction
       
       if ( ( dist2 > 0 ) || 
 	   ( ( dist2 == 0 ) && ( RandomInt( 1 ) ) ) ) {
@@ -600,7 +600,7 @@ void dor_next_torus( int cur, int dest, int in_port,
 		dir = 1;
       }
       
-      if ( partition ) {
+      if ( partition ) {	//set the partition value
 		if ( balance ) {
 		  // Cray's "Partition" allocation
 		  // Two datelines: one between k-1 and 0 which forces VC 1

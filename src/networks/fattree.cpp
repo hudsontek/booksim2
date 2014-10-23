@@ -129,7 +129,7 @@ void FatTree::_BuildNet( const Configuration& config )
 
   //
   // Connect Channels to Routers
-  //
+  //the procedure's order is important, because the routing function relies on it
 
   //
   // Router Connection Rule: Output Ports <gK Move DOWN Network

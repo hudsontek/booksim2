@@ -14,17 +14,20 @@
 #define FATTREE_N 2
 #define MESH_OUTCHANNEL_CNT 1
 
+map<int, int> bridge_nodes; //which node will be connected to fattree,
+//using which out channel of the mesh
+
 class Fattree_mesh : public Network {
     int mesh_k,mesh_n,fattree_k,fattree_n;
     int mesh_cnt;	//how many meshes
     int mesh_outchannel_cnt;	//how many channels between a mesh and the fattree
 	int mesh_nodes;	//how many nodes per mesh
+	int fattree_switches;	//how many switches the big fattree has
 	int fattree_switch_layer_width;//how many nodes per switch layer
 	int mesh_channels;	//how many channels per mesh
 	int fattree_channels;	//how many channels the big fattree has
-	map<int, int> bridge_nodes;	//which node will be connected to fattree,
-								//using which out channel of the mesh
 	
+
     void _ComputeSize(const Configuration &config);
     void _BuildNet(const Configuration &config);
 	

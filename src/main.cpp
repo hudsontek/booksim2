@@ -83,8 +83,8 @@ int gK;//radix
 int gN;//dimension
 int gC;//concentration
 
-int gNodes;
-
+int gNodes;//# of terminal node
+int gSize, gChannels;//newly added, gSize = # of nodes&switches, gChannels = # of Channels
 //generate nocviewer trace
 bool gTrace;
 
