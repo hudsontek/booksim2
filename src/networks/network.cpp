@@ -113,7 +113,7 @@ Network * Network::New(const Configuration & config, const string & name)
     DragonFlyNew::RegisterRoutingFunctions() ;//not null
     n = new DragonFlyNew(config, name);
   } else if(topo == "fattree_mesh"){	//add my own topology
-  	Fattree_mesh::RegisterRoutingFunctions();
+  	Fattree_mesh::RegisterRoutingFunctions();	//not null
 	n = new Fattree_mesh(config, name);
   } else {
     cerr << "Unknown topology: " << topo << endl;

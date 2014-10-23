@@ -86,7 +86,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    name << "router_in_fattree:loc_" << layer << "_" << node;
 
 		    Router *r = Router::NewRouter( config, this, name.str( ), 
-				    node_ix,degree, degree );
+				    node_ix,degree, degree ,this );
 		    getFattreeNode(layer, node) = r;
 		    _timed_modules.push_back(r);
 
@@ -160,7 +160,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    	degree += 1;	//"1" is for the channel connected to fattree
 
 		    Router *r = Router::NewRouter(config, this, name.str(), 
-				    getMeshNodeID(mesh, node), degree, degree);
+				    getMeshNodeID(mesh, node), degree, degree, this);
 		    getMeshNode(mesh, node) = r;
 		    _timed_modules.push_back(r);
 		    
@@ -437,7 +437,7 @@ int Fattree_mesh::getFattreeN() const
 
 //a dummy routing function
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
-		OutputSet *outputs, bool inject , Network *net1=NULL)
+		OutputSet *outputs, bool inject , const Network *net1=NULL)
 {
 	//common part of a routing function
 	int vcBegin = 0, vcEnd = gNumVCs - 1;

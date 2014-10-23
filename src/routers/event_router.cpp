@@ -37,11 +37,11 @@
 
 EventRouter::EventRouter( const Configuration& config,
 		    Module *parent, const string & name, int id,
-		    int inputs, int outputs )
+		    int inputs, int outputs , const Network *net1=NULL)
   : Router( config,
 	    parent, name,
 	    id,
-	    inputs, outputs )
+	    inputs, outputs ,net1)
 {
   ostringstream module_name;
   

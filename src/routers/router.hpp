@@ -93,11 +93,11 @@ protected:
 public:
   Router( const Configuration& config,
 	  Module *parent, const string & name, int id,
-	  int inputs, int outputs );
+	  int inputs, int outputs , const Network *net1=NULL);
 
   static Router *NewRouter( const Configuration& config,
 			    Module *parent, const string & name, int id,
-			    int inputs, int outputs );
+			    int inputs, int outputs , const Network *net1=NULL);	//modified
 
   virtual void AddInputChannel( FlitChannel *channel, CreditChannel *backchannel );
   virtual void AddOutputChannel( FlitChannel *channel, CreditChannel *backchannel );

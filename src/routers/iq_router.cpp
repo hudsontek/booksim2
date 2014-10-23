@@ -48,8 +48,8 @@
 #include "buffer_monitor.hpp"
 
 IQRouter::IQRouter( Configuration const & config, Module *parent, 
-		    string const & name, int id, int inputs, int outputs )
-: Router( config, parent, name, id, inputs, outputs ), _active(false)
+		    string const & name, int id, int inputs, int outputs , const Network *net1=NULL)
+: Router( config, parent, name, id, inputs, outputs , net1), _active(false)
 {
   _vcs         = config.GetInt( "num_vcs" );
 
@@ -1107,7 +1107,7 @@ void IQRouter::_SWHoldUpdate( )
 			 << "." << endl;
 	    }
 	    int in_channel = channel->GetSinkPort();
-	    _rf(router, f, in_channel, &f->la_route_set, false);
+	    _rf(router, f, in_channel, &f->la_route_set, false, pnet);
 	  }
 	} else {
 	  f->la_route_set.Clear();
@@ -2017,7 +2017,7 @@ void IQRouter::_SWAllocUpdate( )
 			 << "." << endl;
 	    }
 	    int in_channel = channel->GetSinkPort();
-	    _rf(router, f, in_channel, &f->la_route_set, false);
+	    _rf(router, f, in_channel, &f->la_route_set, false, pnet);
 	  }
 	} else {
 	  f->la_route_set.Clear();
@@ -2358,7 +2358,7 @@ void IQRouter::_UpdateNOQ(int input, int vc, Flit const * f) {
   if(router) {
     int in_channel = channel->GetSinkPort();
     OutputSet nos;
-    _rf(router, f, in_channel, &nos, false);
+    _rf(router, f, in_channel, &nos, false, pnet);
     sl = nos.GetSet();
     assert(sl.size() == 1);
     OutputSet::sSetElement const & se = *sl.begin();

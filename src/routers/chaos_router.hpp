@@ -107,7 +107,7 @@ class ChaosRouter : public Router {
 public:
   ChaosRouter( const Configuration& config,
 	    Module *parent, const string & name, int id,
-	    int inputs, int outputs );
+	    int inputs, int outputs , const Network *net1=NULL);
 
   virtual ~ChaosRouter( );
 

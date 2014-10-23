@@ -1057,7 +1057,7 @@ void TrafficManager::_Step( )
                 if(cf->head && cf->vc == -1) { // Find an available VC for this head flit, and generate look-ahead routing info if necessary
 	  
                     OutputSet route_set;
-                    _rf(NULL, cf, -1, &route_set, true);	//routing function works here.params:Router *, Flit *, in_channel, OutputSet *, bool inject
+                    _rf(NULL, cf, -1, &route_set, true, _net[subnet]);	//routing function works here.params:Router *, Flit *, in_channel, OutputSet *, bool inject
                     set<OutputSet::sSetElement> const & os = route_set.GetSet();
                     assert(os.size() == 1);
                     OutputSet::sSetElement const & se = *os.begin();
@@ -1076,7 +1076,7 @@ void TrafficManager::_Step( )
                         // first hop, we have to temporarily set cf's VC to be non-negative 
                         // in order to avoid triggering of an assertion in the routing function.
                         cf->vc = vc_start;
-                        _rf(router, cf, in_channel, &cf->la_route_set, false);
+                        _rf(router, cf, in_channel, &cf->la_route_set, false, _net[subnet]);
                         cf->vc = -1;
 
                         if(cf->watch) {
@@ -1164,7 +1164,7 @@ void TrafficManager::_Step( )
                             const Router * router = inject->GetSink();
                             assert(router);
                             int in_channel = inject->GetSinkPort();
-                            _rf(router, f, in_channel, &f->la_route_set, false);	//similar to line 1079
+                            _rf(router, f, in_channel, &f->la_route_set, false, _net[subnet]);	//similar to line 1079
                             if(f->watch) {
                                 *gWatchOut << GetSimTime() << " | "
                                            << "node" << n << " | "

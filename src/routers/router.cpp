@@ -57,7 +57,7 @@ int const Router::STALL_CROSSBAR_CONFLICT = -6;
 
 Router::Router( const Configuration& config,
 		Module *parent, const string & name, int id,
-		int inputs, int outputs ) :
+		int inputs, int outputs , const Network *net1=NULL) :
 TimedModule( parent, name ), _id( id ), _inputs( inputs ), _outputs( outputs ),
    _partial_internal_cycles(0.0)
 {
@@ -68,7 +68,7 @@ TimedModule( parent, name ), _id( id ), _inputs( inputs ), _outputs( outputs ),
   _output_speedup   = config.GetInt( "output_speedup" );
   _internal_speedup = config.GetFloat( "internal_speedup" );
   _classes          = config.GetInt( "classes" );
-
+  pnet = net1;
 #ifdef TRACK_FLOWS
   _received_flits.resize(_classes, vector<int>(_inputs, 0));
   _stored_flits.resize(_classes);
@@ -128,16 +128,16 @@ bool Router::IsFaultyOutput( int c ) const
 /*Router constructor*/
 Router *Router::NewRouter( const Configuration& config,
 			   Module *parent, const string & name, int id,
-			   int inputs, int outputs )
+			   int inputs, int outputs , const Network *net1=NULL )
 {
   const string type = config.GetStr( "router" );
   Router *r = NULL;
   if ( type == "iq" ) {
-    r = new IQRouter( config, parent, name, id, inputs, outputs );
+    r = new IQRouter( config, parent, name, id, inputs, outputs, net1);
   } else if ( type == "event" ) {
-    r = new EventRouter( config, parent, name, id, inputs, outputs );
+    r = new EventRouter( config, parent, name, id, inputs, outputs, net1);
   } else if ( type == "chaos" ) {
-    r = new ChaosRouter( config, parent, name, id, inputs, outputs );
+    r = new ChaosRouter( config, parent, name, id, inputs, outputs, net1);
   } else {
     cerr << "Unknown router type: " << type << endl;
   }
@@ -145,7 +145,7 @@ Router *Router::NewRouter( const Configuration& config,
   /*Original booksim specifies the router using "flow_control"
    *we now simply call these types. 
    */
-
+//  assert(r); r->pnet = net1;	//this have some potential risks
   return r;
 }
 
