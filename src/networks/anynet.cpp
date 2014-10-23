@@ -367,107 +367,107 @@ void AnyNet::readFile(){
       temp = line.substr(pos,next_pos-pos);
       pos = next_pos+1;
       if(temp=="" || temp==" "){
-	continue;
+    	  continue;
       }
 
-      switch(state){
-      case HEAD_TYPE:
-	if(temp=="router"){
-	  head_type = ROUTER;
-	} else if (temp == "node"){
-	  head_type = NODE;
-	} else {
-	  cout<<"Anynet:Unknow head of line type "<<temp<<"\n";
-	  assert(false);
-	}
-	state=HEAD_ID;
-	break;
-      case HEAD_ID:
-	//need better error check
-	head_id = atoi(temp.c_str());
+	  switch(state){
+		  case HEAD_TYPE:
+			if(temp=="router"){
+			  head_type = ROUTER;
+			} else if (temp == "node"){
+			  head_type = NODE;
+			} else {
+			  cout<<"Anynet:Unknow head of line type "<<temp<<"\n";
+			  assert(false);
+			}
+			state=HEAD_ID;
+			break;
+		  case HEAD_ID:
+			//need better error check
+			head_id = atoi(temp.c_str());
 
-	//intialize router structures
-	if(router_list[NODE].count(head_id) == 0){
-	  router_list[NODE][head_id] = map<int, pair<int,int> >();
-	}
-	if(router_list[ROUTER].count(head_id) == 0){
-	  router_list[ROUTER][head_id] = map<int, pair<int,int> >();
-	}  
+			//intialize router structures
+			if(router_list[NODE].count(head_id) == 0){
+			  router_list[NODE][head_id] = map<int, pair<int,int> >();
+			}
+			if(router_list[ROUTER].count(head_id) == 0){
+			  router_list[ROUTER][head_id] = map<int, pair<int,int> >();
+			}
 
-	state=BODY_TYPE;
-	break;
-      case LINK_WEIGHT:
-	if(temp=="router"||
-	   temp == "node"){
-	  //ignore
-	} else {
-	  link_weight= atoi(temp.c_str());
-	  router_list[head_type][head_id][body_id].second=link_weight;
-	  break;
-	}
-	//intentionally letting it flow through
-      case BODY_TYPE:
-	if(temp=="router"){
-	  body_type = ROUTER;
-	} else if (temp == "node"){
-	  body_type = NODE;
-	} else {
-	  cout<<"Anynet:Unknow body type "<<temp<<"\n";
-	  assert(false);
-	}
-	state=BODY_ID;
-	break;
-      case BODY_ID:
-	body_id = atoi(temp.c_str());	
-	//intialize router structures if necessary
-	if(body_type==ROUTER){
-	  if(router_list[NODE].count(body_id) ==0){
-	    router_list[NODE][body_id] = map<int, pair<int,int> >();
-	  }
-	  if(router_list[ROUTER].count(body_id) == 0){
-	    router_list[ROUTER][body_id] = map<int, pair<int,int> >();
-	  }
-	}
+			state=BODY_TYPE;
+			break;
+		  case LINK_WEIGHT:
+			if(temp=="router"||
+			   temp == "node"){
+			  //ignore
+			} else {
+			  link_weight= atoi(temp.c_str());
+			  router_list[head_type][head_id][body_id].second=link_weight;
+			  break;
+			}
+			//intentionally letting it flow through
+		  case BODY_TYPE:
+			if(temp=="router"){
+			  body_type = ROUTER;
+			} else if (temp == "node"){
+			  body_type = NODE;
+			} else {
+			  cout<<"Anynet:Unknow body type "<<temp<<"\n";
+			  assert(false);
+			}
+			state=BODY_ID;
+			break;
+		  case BODY_ID:
+			body_id = atoi(temp.c_str());
+			//intialize router structures if necessary
+			if(body_type==ROUTER){
+			  if(router_list[NODE].count(body_id) ==0){
+				router_list[NODE][body_id] = map<int, pair<int,int> >();
+			  }
+			  if(router_list[ROUTER].count(body_id) == 0){
+				router_list[ROUTER][body_id] = map<int, pair<int,int> >();
+			  }
+			}
 
-	if(head_type==NODE && body_type==NODE){ 
+			if(head_type==NODE && body_type==NODE){
 
-	  cout<<"Anynet:Cannot connect node to node "<<temp<<"\n";
-	  assert(false);
+			  cout<<"Anynet:Cannot connect node to node "<<temp<<"\n";
+			  assert(false);
 
-	} else if(head_type==NODE && body_type==ROUTER){
+			} else if(head_type==NODE && body_type==ROUTER){
 
-	  if(node_list.count(head_id)!=0 &&
-	     node_list[head_id]!=body_id){
-	    cout<<"Anynet:Node "<<body_id<<" trying to connect to multiple router "
-		<<body_id<<" and "<<node_list[head_id]<<endl;
-	    assert(false);
-	  }
-	  node_list[head_id]=body_id;
-	  router_list[NODE][body_id][head_id]=pair<int, int>(-1,1);
+			  if(node_list.count(head_id)!=0 &&
+				 node_list[head_id]!=body_id){
+				cout<<"Anynet:Node "<<body_id<<" trying to connect to multiple router "
+				<<body_id<<" and "<<node_list[head_id]<<endl;
+				assert(false);
+			  }
+			  node_list[head_id]=body_id;
+			  router_list[NODE][body_id][head_id]=pair<int, int>(-1,1);
 
-	} else if(head_type==ROUTER && body_type==NODE){
-	  //insert and check node
-	  if(node_list.count(body_id) != 0 &&
-	     node_list[body_id]!=head_id){
-	    cout<<"Anynet:Node "<<body_id<<" trying to connect to multiple router "
-		<<body_id<<" and "<<node_list[head_id]<<endl;
-	    assert(false);
-	  }
-	  node_list[body_id] = head_id;
-	  router_list[NODE][head_id][body_id]=pair<int, int>(-1,1);
+			} else if(head_type==ROUTER && body_type==NODE){
+			  //insert and check node
+			  if(node_list.count(body_id) != 0 &&
+				 node_list[body_id]!=head_id){
+				cout<<"Anynet:Node "<<body_id<<" trying to connect to multiple router "
+				<<body_id<<" and "<<node_list[head_id]<<endl;
+				assert(false);
+			  }
+			  node_list[body_id] = head_id;
+			  router_list[NODE][head_id][body_id]=pair<int, int>(-1,1);
 
-	} else if(head_type==ROUTER && body_type==ROUTER){
-	  router_list[ROUTER][head_id][body_id]=pair<int, int>(-1,1);
-	  if(router_list[ROUTER][body_id].count(head_id)==0){
-	    router_list[ROUTER][body_id][head_id]=pair<int, int>(-1,1);
-	  }
-	}
-	state=LINK_WEIGHT;
-	break ;
-      default:
-	cout<<"Anynet:Unknow parse state\n";
-	assert(false);
-	break;
+			} else if(head_type==ROUTER && body_type==ROUTER){
+			  router_list[ROUTER][head_id][body_id]=pair<int, int>(-1,1);
+			  if(router_list[ROUTER][body_id].count(head_id)==0){
+				router_list[ROUTER][body_id][head_id]=pair<int, int>(-1,1);
+			  }
+			}
+			state=LINK_WEIGHT;
+			break ;
+		  default:
+			cout<<"Anynet:Unknow parse state\n";
+			assert(false);
+			break;
       }
 
     } while(pos!=0);
