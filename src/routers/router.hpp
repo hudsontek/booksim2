@@ -49,7 +49,7 @@ protected:
   static int const STALL_BUFFER_FULL;
   static int const STALL_BUFFER_RESERVED;
   static int const STALL_CROSSBAR_CONFLICT;
-  const Network *pnet;	//the network to which this router belongs
+
   int _id;
   
   int _inputs;
@@ -94,7 +94,7 @@ public:
   Router( const Configuration& config,
 	  Module *parent, const string & name, int id,
 	  int inputs, int outputs , const Network *net1=NULL);
-
+  const Network *pnet;	//the network to which this router belongs
   static Router *NewRouter( const Configuration& config,
 			    Module *parent, const string & name, int id,
 			    int inputs, int outputs , const Network *net1=NULL);	//modified
