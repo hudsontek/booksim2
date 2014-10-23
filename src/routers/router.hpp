@@ -30,14 +30,14 @@
 
 #include <string>
 #include <vector>
-#include "network.hpp"	//newly added
+//#include "network.hpp"	//newly added
 #include "timed_module.hpp"
 #include "flit.hpp"
 #include "credit.hpp"
 #include "flitchannel.hpp"
 #include "channel.hpp"
 #include "config_utils.hpp"
-
+class Network;
 typedef Channel<Credit> CreditChannel;
 
 class Router : public TimedModule {
