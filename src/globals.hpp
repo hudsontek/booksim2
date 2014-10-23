@@ -45,7 +45,7 @@ extern int gN;
 extern int gC;
 
 extern int gNodes;
-
+extern int gSize, gChannels;	//newly added
 extern bool gTrace;
 
 extern std::ostream * gWatchOut;

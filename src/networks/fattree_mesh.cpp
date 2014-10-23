@@ -49,9 +49,9 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     //then meshes's, then channels from mesh to fattree, 
     //at last is channels from fattree to mesh
 
-    gNodes = _nodes;
-    gSize = _size;
-    gChannels = _channels;
+//    gNodes = _nodes;
+//    gSize = _size;
+//    gChannels = _channels;
 
 #ifdef _FATTREE_MESH_DEBUG_
     cout << "_nodes=" << _nodes << endl;
@@ -437,7 +437,7 @@ int Fattree_mesh::getFattreeN() const
 
 //a dummy routing function
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
-		OutputSet *outputs, bool inject , const Network *net1)
+		OutputSet *outputs, bool inject, const Network *net1)
 {
 	//common part of a routing function
 	int vcBegin = 0, vcEnd = gNumVCs - 1;
@@ -456,6 +456,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 	}
 	assert(((f->vc >= vcBegin) && (f->vc <= vcEnd)) || (inject && (f->vc < 0)));
 
+	Fattree_mesh *net = (Fattree_mesh *)net1;	//the explicit type cast is necessary
 
 	int out_port;
 
