@@ -69,6 +69,6 @@ public:
 //routing functions
 
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
-	OutputSet *outputs, bool inject ) ;
+	OutputSet *outputs, bool inject , const Network *net1=NULL) ;
 
 #endif
