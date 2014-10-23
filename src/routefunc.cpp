@@ -73,7 +73,7 @@ int gWriteReplyBeginVC, gWriteReplyEndVC;
 //  QTree: Nearest Common Ancestor
 // ===
 void qtree_nca( const Router *r, const Flit *f,
-		int in_channel, OutputSet* outputs, bool inject)
+		int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -124,7 +124,7 @@ void qtree_nca( const Router *r, const Flit *f,
 //  Tree4: Nearest Common Ancestor w/ Adaptive Routing Up
 // ===
 void tree4_anca( const Router *r, const Flit *f,
-		 int in_channel, OutputSet* outputs, bool inject)
+		 int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -194,7 +194,7 @@ void tree4_anca( const Router *r, const Flit *f,
 //  Tree4: Nearest Common Ancestor w/ Random Routing Up
 // ===
 void tree4_nca( const Router *r, const Flit *f,
-		int in_channel, OutputSet* outputs, bool inject)
+		int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -257,7 +257,7 @@ void tree4_nca( const Router *r, const Flit *f,
 //  FATTREE: Nearest Common Ancestor w/ Random  Routing Up
 // ===
 void fattree_nca( const Router *r, const Flit *f,
-               int in_channel, OutputSet* outputs, bool inject)
+               int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -321,7 +321,7 @@ void fattree_nca( const Router *r, const Flit *f,
 //  FATTREE: Nearest Common Ancestor w/ Adaptive Routing Up
 // ===
 void fattree_anca( const Router *r, const Flit *f,
-                int in_channel, OutputSet* outputs, bool inject)
+                int in_channel, OutputSet* outputs, bool inject, Network *net=NULL)
 {
 
   int vcBegin = 0, vcEnd = gNumVCs-1;
@@ -402,7 +402,7 @@ void fattree_anca( const Router *r, const Flit *f,
 int dor_next_mesh( int cur, int dest, bool descending = false );
 
 void adaptive_xy_yx_mesh( const Router *r, const Flit *f, 
-		 int in_channel, OutputSet *outputs, bool inject )
+		 int in_channel, OutputSet *outputs, bool inject, Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -474,7 +474,7 @@ void adaptive_xy_yx_mesh( const Router *r, const Flit *f,
 }
 
 void xy_yx_mesh( const Router *r, const Flit *f, 
-		 int in_channel, OutputSet *outputs, bool inject )
+		 int in_channel, OutputSet *outputs, bool inject, Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -640,7 +640,7 @@ void dor_next_torus( int cur, int dest, int in_port,
 
 //=============================================================
 
-void dim_order_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void dim_order_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject, Network *net=NULL)
 {
   int out_port = inject ? -1 : dor_next_mesh( r->GetID( ), f->dest );
   
@@ -679,7 +679,7 @@ void dim_order_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *
 
 //=============================================================
 
-void dim_order_ni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void dim_order_ni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int out_port = inject ? -1 : dor_next_mesh( r->GetID( ), f->dest );
   
@@ -729,7 +729,7 @@ void dim_order_ni_mesh( const Router *r, const Flit *f, int in_channel, OutputSe
 
 //=============================================================
 
-void dim_order_pni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void dim_order_pni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int out_port = inject ? -1 : dor_next_mesh( r->GetID(), f->dest );
   
@@ -811,7 +811,7 @@ int rand_min_intr_mesh( int src, int dest )
 
 //=============================================================
 
-void romm_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void romm_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -872,7 +872,7 @@ void romm_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outpu
 
 //=============================================================
 
-void romm_ni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void romm_ni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -929,7 +929,7 @@ void romm_ni_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *ou
 
 //=============================================================
 
-void min_adapt_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void min_adapt_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1029,7 +1029,7 @@ void min_adapt_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *
 
 //=============================================================
 
-void planar_adapt_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void planar_adapt_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1273,7 +1273,7 @@ void limited_adapt_mesh( const Router *r, const Flit *f, int in_channel, OutputS
 */
 //=============================================================
 
-void valiant_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void valiant_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1334,7 +1334,7 @@ void valiant_mesh( const Router *r, const Flit *f, int in_channel, OutputSet *ou
 
 //=============================================================
 
-void valiant_torus( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void valiant_torus( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1413,7 +1413,7 @@ void valiant_torus( const Router *r, const Flit *f, int in_channel, OutputSet *o
 //=============================================================
 
 void valiant_ni_torus( const Router *r, const Flit *f, int in_channel, 
-		       OutputSet *outputs, bool inject )
+		       OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1515,7 +1515,7 @@ void valiant_ni_torus( const Router *r, const Flit *f, int in_channel,
 //=============================================================
 
 void dim_order_torus( const Router *r, const Flit *f, int in_channel, 
-		      OutputSet *outputs, bool inject )
+		      OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1583,7 +1583,7 @@ void dim_order_torus( const Router *r, const Flit *f, int in_channel,
 //=============================================================
 
 void dim_order_ni_torus( const Router *r, const Flit *f, int in_channel, 
-			 OutputSet *outputs, bool inject )
+			 OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1648,7 +1648,7 @@ void dim_order_ni_torus( const Router *r, const Flit *f, int in_channel,
 //=============================================================
 
 void dim_order_bal_torus( const Router *r, const Flit *f, int in_channel, 
-			  OutputSet *outputs, bool inject )
+			  OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1715,7 +1715,7 @@ void dim_order_bal_torus( const Router *r, const Flit *f, int in_channel,
 
 //=============================================================
 
-void min_adapt_torus( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject )
+void min_adapt_torus( const Router *r, const Flit *f, int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1796,7 +1796,7 @@ void min_adapt_torus( const Router *r, const Flit *f, int in_channel, OutputSet 
 //=============================================================
 
 void dest_tag_fly( const Router *r, const Flit *f, int in_channel, 
-		   OutputSet *outputs, bool inject )
+		   OutputSet *outputs, bool inject , Network *net=NULL)
 {
   int vcBegin = 0, vcEnd = gNumVCs-1;
   if ( f->type == Flit::READ_REQUEST ) {
@@ -1843,7 +1843,7 @@ void dest_tag_fly( const Router *r, const Flit *f, int in_channel,
 //=============================================================
 
 void chaos_torus( const Router *r, const Flit *f, 
-		  int in_channel, OutputSet *outputs, bool inject )
+		  int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   outputs->Clear( );
 
@@ -1882,7 +1882,7 @@ void chaos_torus( const Router *r, const Flit *f,
 //=============================================================
 
 void chaos_mesh( const Router *r, const Flit *f, 
-		  int in_channel, OutputSet *outputs, bool inject )
+		  int in_channel, OutputSet *outputs, bool inject , Network *net=NULL)
 {
   outputs->Clear( );
 

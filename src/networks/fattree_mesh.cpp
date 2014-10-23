@@ -437,7 +437,7 @@ int Fattree_mesh::getFattreeN() const
 
 //a dummy routing function
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
-		OutputSet *outputs, bool inject )
+		OutputSet *outputs, bool inject , Network *net=NULL)
 {
 	//common part of a routing function
 	int vcBegin = 0, vcEnd = gNumVCs - 1;

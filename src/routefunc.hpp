@@ -32,8 +32,8 @@
 #include "router.hpp"
 #include "outputset.hpp"
 #include "config_utils.hpp"
-
-typedef void (*tRoutingFunction)( const Router *, const Flit *, int in_channel, OutputSet *, bool inject);//modified
+#include "network.hpp"
+typedef void (*tRoutingFunction)( const Router *, const Flit *, int in_channel, OutputSet *, bool inject, Network *);//modified
 
 void InitializeRoutingMap( const Configuration & config );
 
