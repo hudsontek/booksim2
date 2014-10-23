@@ -30,7 +30,7 @@
 
 #include <string>
 #include <vector>
-
+#include "network.hpp"	//newly added
 #include "timed_module.hpp"
 #include "flit.hpp"
 #include "credit.hpp"
@@ -49,7 +49,7 @@ protected:
   static int const STALL_BUFFER_FULL;
   static int const STALL_BUFFER_RESERVED;
   static int const STALL_CROSSBAR_CONFLICT;
-
+  const Network *pnet;	//the network to which this router belongs
   int _id;
   
   int _inputs;
