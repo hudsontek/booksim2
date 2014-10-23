@@ -14,10 +14,11 @@
 #define FATTREE_N 2
 #define MESH_OUTCHANNEL_CNT 1
 
-map<int, int> bridge_nodes; //which node will be connected to fattree,
-//using which out channel of the mesh
 
 class Fattree_mesh : public Network {
+
+
+public:
     int mesh_k,mesh_n,fattree_k,fattree_n;
     int mesh_cnt;	//how many meshes
     int mesh_outchannel_cnt;	//how many channels between a mesh and the fattree
@@ -27,7 +28,10 @@ class Fattree_mesh : public Network {
 	int mesh_channels;	//how many channels per mesh
 	int fattree_channels;	//how many channels the big fattree has
 	
+	map<int, int> bridge_nodes; //which node will be connected to fattree,
+	//using which out channel of the mesh
 
+private:
     void _ComputeSize(const Configuration &config);
     void _BuildNet(const Configuration &config);
 	
@@ -35,6 +39,8 @@ class Fattree_mesh : public Network {
 	
 	Router*& getFattreeNode(int layer, int pos);
 	Router*& getMeshNode(int mesh_id, int node_id);
+
+public:
 	int getFattreeNodeID(int layer, int pos);
 	int getMeshNodeID(int mesh_id, int node_id);
 	
@@ -51,7 +57,7 @@ class Fattree_mesh : public Network {
 	int getMeshInChannelID(int mesh_id, int out_channel);
 
 
-public:
+//public:
     Fattree_mesh(const Configuration &config, const string &name);
     static void RegisterRoutingFunctions();
     int getMeshN() const;
