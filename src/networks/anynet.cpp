@@ -212,7 +212,7 @@ void AnyNet::RegisterRoutingFunctions() {
 }
 
 void min_anynet( const Router *r, const Flit *f, int in_channel, 
-		 OutputSet *outputs, bool inject , const Network *net1=NULL){
+		 OutputSet *outputs, bool inject , const Network *net1){
   int out_port=-1;
   if(!inject){
     assert(global_routing_table[r->GetID()].count(f->dest)!=0);

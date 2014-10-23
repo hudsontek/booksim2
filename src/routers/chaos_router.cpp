@@ -37,7 +37,7 @@
 
 ChaosRouter::ChaosRouter( const Configuration& config,
 		    Module *parent, const string & name, int id,
-		    int inputs, int outputs , const Network *net1=NULL)
+		    int inputs, int outputs , const Network *net1)
   : Router( config,
 	    parent, name,
 	    id,
