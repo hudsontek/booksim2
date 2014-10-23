@@ -120,7 +120,7 @@ public:
   {
     return _pri;
   }
-  void Route( tRoutingFunction rf, const Router* router, const Flit* f, int in_channel );
+  void Route( tRoutingFunction _rf, const Router* router, const Flit* f, int in_channel );
 
   inline int GetOccupancy() const
   {
