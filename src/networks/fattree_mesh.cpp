@@ -225,13 +225,13 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		}//end of iteration in a mesh
     }//end of instantiate nodes in meshes
 
-#ifdef _FATTREE_MESH_DEBUG_
-    //print out the topology
-    cout << "before the bridge channels are connected." << endl;
-
-    printTopo();
-
-#endif
+//#ifdef _FATTREE_MESH_DEBUG_
+//    //print out the topology
+//    cout << "before the bridge channels are connected." << endl;
+//
+//    printTopo();
+//
+//#endif
 
     //so far, we have neither attached bridge channels to fattree nor meshes
 
