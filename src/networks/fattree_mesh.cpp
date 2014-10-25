@@ -440,7 +440,7 @@ void Fattree_mesh::printTopo() const
 //			fc = _routers[i]->GetInputChannel(j);
 //			if(!fc)
 //			{
-//				cout << "channel_not_avail." << endl;
+//				cout << "\tchannel_not_avail." << endl;
 //				continue;
 //			}
 //
@@ -464,7 +464,7 @@ void Fattree_mesh::printTopo() const
 			fc = _routers[i]->GetOutputChannel(j);
 			if(!fc)
 			{
-				cout << "channel not avail yet." << endl;
+				cout << "\tchannel_not_avail." << endl;
 				continue;
 			}
 
@@ -473,7 +473,7 @@ void Fattree_mesh::printTopo() const
 			r = fc->GetSink();
 			if(!r)
 			{
-				cout << "router not avail yet." <<endl;
+				cout << "router_not_avail." <<endl;
 				continue;
 			}
 			cout << r->Name() << endl;
