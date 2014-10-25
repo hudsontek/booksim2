@@ -35,6 +35,8 @@ public:
 
 	map<int, int> chan_src_ix;	//a channel's index in its source's channel array
 	map<int, int> chan_sink_ix;	//a channel's index in its sink's channel array
+	map<int, int> term_chan_src_ix;	//a terminal channel's index in its source's channel array
+	map<int, int> term_chan_sink_ix;//a terminal channel's index in its sink's channel array
 
 private:
     void _ComputeSize(const Configuration &config);

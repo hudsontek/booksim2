@@ -106,6 +106,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 				    chan_ix = getFattreeDownChannelID(layer, node, port);
 				    getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
 						    _chan_cred[chan_ix]);
+				    chan_src_ix[chan_ix] =
+				    		getFattreeNode(layer, node)->NumConnectedOutputs() - 1;
 				    _chan[chan_ix]->SetLatency(1);
 				    _chan_cred[chan_ix]->SetLatency(1);
 
@@ -115,11 +117,15 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 
 				    getFattreeNode(layer + 1, node_offset)->AddInputChannel(_chan[chan_ix],
 						    _chan_cred[chan_ix]);
+				    chan_sink_ix[chan_ix] =
+				    		getFattreeNode(layer + 1, node_offset)->NumConnectedInputs() - 1;
 
 				    //connect out channel of the related node in next layer to this node
 				    chan_ix = getFattreeUpChannelID(layer + 1, node_offset, node_port);
 				    getFattreeNode(layer, node)->AddInputChannel(_chan[chan_ix],
 						    _chan_cred[chan_ix]);
+				    chan_sink_ix[chan_ix] =
+				    		getFattreeNode(layer, node)->NumConnectedInputs() - 1;
 				}
 
 				if(layer > 0)//this router isn't @ top level, connect upside channels
@@ -128,6 +134,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 					chan_ix = getFattreeUpChannelID(layer, node, port);
 					getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
 							_chan_cred[chan_ix]);
+					chan_src_ix[chan_ix] = getFattreeNode(layer, node)->NumConnectedOutputs() - 1;
 					_chan[chan_ix]->SetLatency(1);
 					_chan_cred[chan_ix]->SetLatency(1);
 				}
@@ -168,8 +175,13 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    
 		    //connect inject and eject channels
 		    chan_ix = mesh * mesh_nodes + node;	//index of inject & eject channels
+
 		    r->AddInputChannel(_inject[chan_ix],_inject_cred[chan_ix]);
+		    term_chan_sink_ix[chan_ix] = r->NumConnectedInputs() - 1;
+
 		    r->AddOutputChannel(_eject[chan_ix],_eject_cred[chan_ix]);
+		    term_chan_src_ix[chan_ix] = r->NumConnectedOutputs() - 1;
+
 		    _inject[chan_ix]->SetLatency(1);
 		    _inject_cred[chan_ix]->SetLatency(1);//not sure
 		    _eject[chan_ix]->SetLatency(1);
@@ -186,9 +198,17 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 				rinput = getMeshLeftChannelID(mesh, rnode, dim);
 
 				r->AddOutputChannel(_chan[loutput], _chan_cred[loutput]);
+				chan_src_ix[loutput] = r->NumConnectedOutputs() - 1;
+
 				r->AddOutputChannel(_chan[routput], _chan_cred[routput]);
+				chan_src_ix[routput] = r->NumConnectedOutputs() - 1;
+
 				r->AddInputChannel(_chan[linput],_chan_cred[linput]);
+				chan_sink_ix[linput] = r->NumConnectedInputs() - 1;
+
 				r->AddInputChannel(_chan[rinput],_chan_cred[rinput]);
+				chan_sink_ix[rinput] = r->NumConnectedInputs() - 1;
+
 
 				//set channel latency, no need for input channels because
 				//this node's input is other node's output
@@ -245,6 +265,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
     //connect bridge channels to nodes in fattree's last layer
     int m2f_chan, f2m_chan;
     int mesh;
+    Router *r;
     for(int node = 0; node < fattree_switch_layer_width; ++node)//which node in last layer
     {
 		for(int node_port = 0; node_port < fattree_k; ++node_port)
@@ -255,11 +276,17 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 				m2f_chan = getMeshOutChannelID(mesh, iter->second);
 				f2m_chan = getMeshInChannelID(mesh, iter->second);
 
-				getFattreeNode(fattree_n - 1, node)->AddOutputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
-				getFattreeNode(fattree_n - 1, node)->AddInputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
+				r = getFattreeNode(fattree_n - 1, node);
+				r->AddOutputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
+				chan_src_ix[f2m_chan] = r->NumConnectedOutputs() - 1;
+				r->AddInputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
+				chan_sink_ix[m2f_chan] = r->NumConnectedInputs() - 1;
 
-				getMeshNode(mesh, iter->first)->AddOutputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
-				getMeshNode(mesh, iter->first)->AddInputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
+				r = getMeshNode(mesh, iter->first);
+				r->AddOutputChannel(_chan[m2f_chan],_chan_cred[m2f_chan]);
+				chan_src_ix[m2f_chan] = r->NumConnectedOutputs() - 1;
+				r->AddInputChannel(_chan[f2m_chan],_chan_cred[f2m_chan]);
+				chan_sink_ix[f2m_chan] = r->NumConnectedInputs() - 1;
 
 				_chan[m2f_chan]->SetLatency(1);
 				_chan[f2m_chan]->SetLatency(1);
