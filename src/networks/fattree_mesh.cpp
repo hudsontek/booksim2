@@ -595,8 +595,6 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 			{
 				map<int,int>::const_iterator iter; //iterator into the bridgeNode set
 
-				loc %= net->mesh_nodes;	//get the relative id within the mesh
-
 				iter = net->bridge_nodes.find(loc);
 				if(iter != net->bridge_nodes.end())	//current node is a bridge node
 				{
