@@ -231,30 +231,25 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 
     for(int i = 0; i < _size; ++i)
     {
-		cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
-		for(int j = 0; j < _routers[i]->NumInputs(); ++j)
-		{
-				if(!_routers[i]->GetInputChannel(j))
-				{
-						cout << "\tnot available yet." << endl;
-						continue;
-				}
-		    cout << "\t" << _routers[i]->GetInputChannel(j)->Name() << endl;
-		}
-		cout << endl;
+    	FlitChannel *fc;
+    	cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
+    	for(int j = 0; j < _routers[i]->NumInputs(); ++j)
+    	{
+    		fc = _routers[i]->GetInputChannel(j);
+    		cout << "\t" << fc->Name();
+    		cout << " from " << fc->GetSource()->Name() << endl;
+    	}
+    	cout << endl;
 
-		cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
-		for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
-		{
-				if(!_routers[i]->GetInputChannel(j))
-				{
-						cout << "\tnot available yet." << endl;
-						continue;
-				}
-		    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
-		}
+    	cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
+    	for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
+    	{
+    		fc = _routers[i]->GetOutputChannel(j);
+    		cout << "\t" << fc->Name();
+    		cout << " to " << fc->GetSink()->Name() << endl;
+    	}
 
-		cout << "===============" << endl;
+    	cout << "===============" << endl;
     }
 
     cout << "======================================================" << endl;
@@ -302,17 +297,22 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 
     for(int i = 0; i < _size; ++i)
     {
+    	FlitChannel *fc;
 		cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
 		for(int j = 0; j < _routers[i]->NumInputs(); ++j)
 		{
-		    cout << "\t" << _routers[i]->GetInputChannel(j)->Name() << endl;
+			fc = _routers[i]->GetInputChannel(j);
+		    cout << "\t" << fc->Name();
+		    cout << " from " << fc->GetSource()->Name() << endl;
 		}
 		cout << endl;
 
 		cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
 		for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
 		{
-		    cout << "\t" << _routers[i]->GetOutputChannel(j)->Name() << endl;
+		    fc = _routers[i]->GetOutputChannel(j);
+		    cout << "\t" << fc->Name();
+		    cout << " to " << fc->GetSink()->Name() << endl;
 		}
 
 		cout << "===============" << endl;
