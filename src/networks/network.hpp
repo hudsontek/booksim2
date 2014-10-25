@@ -48,8 +48,8 @@ typedef Channel<Credit> CreditChannel;
 class Network : public TimedModule {
 protected:
 
-  int _size;	//number of routers/switches
-  int _nodes;	//number of nodes
+  int _size;	//number of routers
+  int _nodes;	//number of nodes, used to establish the inject/eject channels
   int _channels;//number of unidirectional channels, not including inject/eject channels
   int _classes;
 

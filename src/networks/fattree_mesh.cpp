@@ -488,6 +488,7 @@ void Fattree_mesh::printTopo() const
 //routing function, the out_port is index into Router's _input_channels,
 //_output_channels, _input_credits, _output_credits, so these channels
 //must be added to Router in a certain order, so we can calculate it here.
+//Flit's dest variable is dest's node_id, not router's id.
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
 		OutputSet *outputs, bool inject, const Network *net1)
 {
@@ -519,13 +520,15 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 	}
 	else	//out_port needs to be calculated
 	{
-		int dest = f->dest;
-		int loc = r->GetID();
+		int dest = f->dest;		//destination's node_id
+		int loc = r->GetID();	//current position's router_id
 
 		assert(loc < gSize);
+		assert(dest < gNodes);
 
 		int loc_mesh = (loc - net->fattree_switches) / net->mesh_nodes;	//may be negative
-		int dest_mesh = (dest - net->fattree_switches) / net->mesh_nodes;
+//		int dest_mesh = (dest - net->fattree_switches) / net->mesh_nodes;
+		int dest_mesh = dest / net->mesh_nodes;
 
 		int chan_id;
 
@@ -564,7 +567,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 						pos, RandomInt(net->fattree_k - 1));
 				out_port = net->chan_src_ix.find(chan_id)->second;
 			}
-		}
+		}//end of this is a fattree node
 		else	//this is a mesh node
 		{
 			loc %= net->mesh_nodes;	//get the relative id within the mesh
@@ -615,8 +618,9 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					chan_id = net->getMeshOutChannelID(loc_mesh, iter->second);
 					out_port = net->chan_src_ix.find(chan_id)->second;
 				}
-				else//randomly choose a bridge node
+				else	//current node isn't a bridge node, we need to reach one first
 				{
+					//randomly choose a bridge node
 					dest = net->bridge_nodes_list[ RandomInt(net->bridge_nodes_list.size() - 1) ].first;
 
 					int dim;
