@@ -643,10 +643,10 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
 						out_port = net->chan_src_ix.find(chan_id)->second;
 					}
-				}
-			}
-		}
-	}
+				}//end of current node isn't a bridge node
+			}//end of @ source mesh
+		}// end of this is a mesh node
+	}//end of the out_port needs to be calculated
 
 	outputs->Clear();
 	outputs->AddRange(out_port, vcBegin, vcEnd);
