@@ -201,6 +201,8 @@ public:
 
   inline int NumInputs() const {return _inputs;}
   inline int NumOutputs() const {return _outputs;}
+  inline int NumConnectedInputs() const {return _input_channels.size();}	//newly added
+  inline int NumConnectedOutputs() const {return _output_channels.size();}	//newly added
 };
 
 #endif
