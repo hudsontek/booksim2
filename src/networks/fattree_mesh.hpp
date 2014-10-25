@@ -2,7 +2,7 @@
 #ifndef _FATTREE_MESH_HPP_
 #define _FATTREE_MESH_HPP_
 
-//#define _FATTREE_MESH_DEBUG_
+#define _FATTREE_MESH_DEBUG_
 
 #include "network.hpp"
 #include "routefunc.hpp"
@@ -51,7 +51,7 @@ public:
 	int getFattreeNodeID(int layer, int pos);
 
 	int getFattreeUpChannelID(int layer, int node, int pos);
-	int getFattreeDownChannelID(int layer, int node, int pos);
+	int getFattreeDownChannelID(int layer, int node, int pos) const;
 
 	int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port);
 	int getFattreeNextLayerConnectedNodePort(int layer, int node, int port);
@@ -59,14 +59,16 @@ public:
 
 	int getMeshNodeID(int mesh_id, int node_id);
 
-	int getMeshLeftChannelID(int mesh_id, int node_id, int dim);
-	int getMeshRightChannelID(int mesh_id, int node_id, int dim);
+	int getMeshLeftChannelID(int mesh_id, int node_id, int dim) const;
+	int getMeshRightChannelID(int mesh_id, int node_id, int dim) const;
 
 	int getMeshRelativeLeftNodeID(int node_id, int dim);
 	int getMeshRelativeRightNodeID(int node_id, int dim);
 
-	int getMeshOutChannelID(int mesh_id, int out_channel);
-	int getMeshInChannelID(int mesh_id, int out_channel);
+	int getMeshOutChannelID(int mesh_id, int out_channel) const;
+	int getMeshInChannelID(int mesh_id, int out_channel) const;
+
+	int getMeshTerminalChannelID(int mesh_id, int node_id);
 
 
 //public:

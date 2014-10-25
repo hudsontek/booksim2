@@ -49,9 +49,9 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     //then meshes's, then channels from mesh to fattree, 
     //at last is channels from fattree to mesh
 
-//    gNodes = _nodes;
-//    gSize = _size;
-//    gChannels = _channels;
+    gNodes = _nodes;
+    gSize = _size;
+    gChannels = _channels;
 
 #ifdef _FATTREE_MESH_DEBUG_
     cout << "_nodes=" << _nodes << endl;
@@ -363,7 +363,7 @@ int Fattree_mesh::getFattreeUpChannelID(int layer, int node, int pos){
 		+ per_layer + (layer - 1) * per_layer * 2;
 }
 
-int Fattree_mesh::getFattreeDownChannelID(int layer, int node, int pos){
+int Fattree_mesh::getFattreeDownChannelID(int layer, int node, int pos) const{
     assert(layer >= 0
     		&& layer < fattree_n - 1
 		    && node < fattree_switch_layer_width 
@@ -398,7 +398,7 @@ int Fattree_mesh::getFattreeNextLayerConnectedNodePort(int layer, int node, int 
 //node 1's right channel in dimension 0 is 2*_n, left is 2*_n+1...
 //channels are numbered node by node, and dimension by dimension of the same node, 
 //and left is prior to right
-int Fattree_mesh::getMeshLeftChannelID(int mesh_id, int node_id, int dim){
+int Fattree_mesh::getMeshLeftChannelID(int mesh_id, int node_id, int dim) const{
     int base = fattree_channels 
 		+ mesh_id * mesh_channels 
 		+ 2 * mesh_n * node_id;
@@ -406,7 +406,7 @@ int Fattree_mesh::getMeshLeftChannelID(int mesh_id, int node_id, int dim){
     return base + offset;
 }
 
-int Fattree_mesh::getMeshRightChannelID(int mesh_id, int node_id, int dim){
+int Fattree_mesh::getMeshRightChannelID(int mesh_id, int node_id, int dim) const{
     int base = fattree_channels 
 		+ mesh_id * mesh_channels 
 		+ 2 * mesh_n * node_id;
@@ -430,17 +430,21 @@ int Fattree_mesh::getMeshRelativeRightNodeID( int node_id, int dim){
     return node_id + k_exp_dim;	//left is prior to right
 }
 
-int Fattree_mesh::getMeshOutChannelID(int mesh_id, int out_channel){
+int Fattree_mesh::getMeshOutChannelID(int mesh_id, int out_channel) const{
     int base = fattree_channels + mesh_channels * mesh_cnt;
     int offset = mesh_id * mesh_outchannel_cnt + out_channel;
     return base + offset;
 }
 
-int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel){
+int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel) const{
     int base = fattree_channels + mesh_channels * mesh_cnt 
 		+ mesh_outchannel_cnt * mesh_cnt;
     int offset = mesh_id * mesh_outchannel_cnt + out_channel;
     return base + offset;
+}
+
+int Fattree_mesh::getMeshTerminalChannelID(int mesh_id, int node_id){
+	return mesh_id * mesh_nodes + node_id;
 }
 
 void Fattree_mesh::RegisterRoutingFunctions(){
@@ -509,6 +513,8 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 		int loc_mesh = (loc - net->fattree_switches) / net->mesh_nodes;
 		int dest_mesh = (dest - net->fattree_switches) / net->mesh_nodes;
 
+		int chan_id;
+
 		if(loc < net->fattree_switches)	//this is a fattree node
 		{
 			int level = loc / net->fattree_switch_layer_width;
@@ -522,50 +528,67 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 			{
 				if(level == net->fattree_n - 1)	//lowest level
 				{
-					out_port = net->fattree_k + dest_mesh % net->fattree_k;
+					//the situation is a little complicate here
+					//randomly choose a bridge node, could this cause dead lock?
+					chan_id = net->getMeshInChannelID(dest_mesh,
+							RandomInt(net->mesh_outchannel_cnt - 1));
+					out_port = net->chan_src_ix.find(chan_id)->second;	//we can't use operator [], because this operator is not read-only
 				}
 				else	//not lowest level
 				{
 					int nodes_per_branch = nodes_per_cluster / net->fattree_k;
 					int offset_in_cluster = dest_mesh % nodes_per_cluster;
-					out_port = net->fattree_k + offset_in_cluster / nodes_per_branch;
+					int branch = offset_in_cluster / nodes_per_branch;
+					chan_id = net->getFattreeDownChannelID(level, pos, branch);
+					out_port = net->chan_src_ix.find(chan_id)->second;
 				}
 			}
 			else	//destination is in other subtree, going up
 			{
 //				assert(in_channel < FATTREE_K);
-				out_port = RandomInt(net->fattree_k - 1);
+				chan_id = net->getFattreeDownChannelID(level,
+						pos, RandomInt(net->fattree_k - 1));
+				out_port = net->chan_src_ix.find(chan_id)->second;
 			}
 		}
 		else	//this is a mesh node
 		{
+			loc %= net->mesh_nodes;	//get the relative id within the mesh
+			dest %= net->mesh_nodes;//get the relative id within the mesh
+
 			if(loc_mesh == dest_mesh)	//reach the destination mesh
 			{
 				if(loc == dest)	//reach the destination node
 				{
-					out_port = r->NumOutputs();	//not sure
+					chan_id = loc_mesh * net->mesh_nodes + loc;	//inject/eject channel id
+					out_port = net->term_chan_src_ix.find(chan_id)->second;
 				}
 				else	//use dor within this mesh to reach the destination node
 				{
-					loc %= net->mesh_nodes;	//get the relative id within the mesh
-					dest %= net->mesh_nodes;//get the relative id within the mesh
-
 					int dim;
+					int loc_tmp = loc, dest_tmp = dest;	//the relative position in the dimension in which loc and dest are not @ the same location
+
 					for(dim = 0; dim < net->mesh_n - 1; ++dim)
 					{
-						if(loc % net->mesh_k != dest % net->mesh_k)	//loc and dest are not @ the same location within this dimension
+						if(loc_tmp % net->mesh_k != dest_tmp % net->mesh_k)	//loc and dest are not @ the same location within this dimension
 							break;
-						loc /= net->mesh_k;
-						dest /= net->mesh_k;
+						loc_tmp /= net->mesh_k;
+						dest_tmp /= net->mesh_k;
 					}
 
-					loc %= net->mesh_k;
-					dest %= net->mesh_k;
+					loc_tmp %= net->mesh_k;
+					dest_tmp %= net->mesh_k;
 
-					if(loc < dest)
-						out_port = 2 * dim + 1;	//move right
-					else
-						out_port = 2 * dim;		//move left
+					if(loc_tmp < dest_tmp)	//move right
+					{
+						chan_id = net->getMeshRightChannelID(loc_mesh, loc, dim);
+						out_port = net->chan_src_ix.find(chan_id)->second;
+					}
+					else			//move left
+					{
+						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
+						out_port = net->chan_src_ix.find(chan_id)->second;
+					}
 				}
 			}
 			else	//we are still @ source mesh
@@ -577,27 +600,37 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 				iter = net->bridge_nodes.find(loc);
 				if(iter != net->bridge_nodes.end())	//current node is a bridge node
 				{
-					out_port = r->NumOutputs() - 1;
+					chan_id = net->getMeshOutChannelID(loc_mesh, iter->second);
+					out_port = net->chan_src_ix.find(chan_id)->second;
 				}
 				else//randomly choose a bridge node
 				{
 					dest = net->bridge_nodes_list[ RandomInt(net->bridge_nodes_list.size() - 1) ].first;
+
 					int dim;
+					int loc_tmp = loc, dest_tmp = dest;	//the relative position in the dimension in which loc and dest are not @ the same location
+
 					for(dim = 0; dim < net->mesh_n - 1; ++dim)
 					{
-						if(loc % net->mesh_k != dest % net->mesh_k)	//loc and dest are not @ the same location within this dimension
+						if(loc_tmp % net->mesh_k != dest_tmp % net->mesh_k)	//loc and dest are not @ the same location within this dimension
 							break;
-						loc /= net->mesh_k;
-						dest /= net->mesh_k;
+						loc_tmp /= net->mesh_k;
+						dest_tmp /= net->mesh_k;
 					}
 
-					loc %= net->mesh_k;
-					dest %= net->mesh_k;
+					loc_tmp %= net->mesh_k;
+					dest_tmp %= net->mesh_k;
 
-					if(loc < dest)
-						out_port = 2 * dim + 1;	//move right
-					else
-						out_port = 2 * dim;		//move left
+					if(loc_tmp < dest_tmp)	//move right
+					{
+						chan_id = net->getMeshRightChannelID(loc_mesh, loc, dim);
+						out_port = net->chan_src_ix.find(chan_id)->second;
+					}
+					else			//move left
+					{
+						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
+						out_port = net->chan_src_ix.find(chan_id)->second;
+					}
 				}
 			}
 		}
