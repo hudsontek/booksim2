@@ -355,6 +355,7 @@ int Fattree_mesh::getMeshNodeID(int mesh_id, int node_id){
 
 int Fattree_mesh::getFattreeUpChannelID(int layer, int node, int pos){
     assert(layer > 0 
+    		&& layer < fattree_n
 		    && node < fattree_switch_layer_width 
 		    && pos < fattree_k);
     int per_layer = fattree_k * fattree_switch_layer_width;
@@ -363,7 +364,8 @@ int Fattree_mesh::getFattreeUpChannelID(int layer, int node, int pos){
 }
 
 int Fattree_mesh::getFattreeDownChannelID(int layer, int node, int pos){
-    assert(layer < fattree_n - 1 
+    assert(layer >= 0
+    		&& layer < fattree_n - 1
 		    && node < fattree_switch_layer_width 
 		    && pos < fattree_k);
     int per_layer = fattree_k * fattree_switch_layer_width;

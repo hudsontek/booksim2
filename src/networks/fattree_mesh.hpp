@@ -49,17 +49,22 @@ private:
 
 public:
 	int getFattreeNodeID(int layer, int pos);
-	int getMeshNodeID(int mesh_id, int node_id);
-	
+
 	int getFattreeUpChannelID(int layer, int node, int pos);
 	int getFattreeDownChannelID(int layer, int node, int pos);
+
 	int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port);
 	int getFattreeNextLayerConnectedNodePort(int layer, int node, int port);
 	
+
+	int getMeshNodeID(int mesh_id, int node_id);
+
 	int getMeshLeftChannelID(int mesh_id, int node_id, int dim);
 	int getMeshRightChannelID(int mesh_id, int node_id, int dim);
+
 	int getMeshRelativeLeftNodeID(int node_id, int dim);
 	int getMeshRelativeRightNodeID(int node_id, int dim);
+
 	int getMeshOutChannelID(int mesh_id, int out_channel);
 	int getMeshInChannelID(int mesh_id, int out_channel);
 
@@ -67,6 +72,7 @@ public:
 //public:
     Fattree_mesh(const Configuration &config, const string &name);
     static void RegisterRoutingFunctions();
+
     int getMeshN() const;
     int getMeshK() const;
 	int getFattreeN() const;
