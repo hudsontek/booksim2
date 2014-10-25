@@ -344,16 +344,16 @@ Router*& Fattree_mesh::getMeshNode(int mesh_id, int node_id){
 		mesh_id * mesh_nodes + node_id];
 }
 
-int Fattree_mesh::getFattreeNodeID(int layer, int pos){
+int Fattree_mesh::getFattreeNodeID(int layer, int pos) const{
     return layer * fattree_switch_layer_width + pos;
 }
 
-int Fattree_mesh::getMeshNodeID(int mesh_id, int node_id){
+int Fattree_mesh::getMeshNodeID(int mesh_id, int node_id) const{
     return fattree_n * fattree_switch_layer_width 
 		+ mesh_id * mesh_nodes + node_id;
 }
 
-int Fattree_mesh::getFattreeUpChannelID(int layer, int node, int pos){
+int Fattree_mesh::getFattreeUpChannelID(int layer, int node, int pos) const{
     assert(layer > 0 
     		&& layer < fattree_n
 		    && node < fattree_switch_layer_width 
@@ -374,7 +374,7 @@ int Fattree_mesh::getFattreeDownChannelID(int layer, int node, int pos) const{
 }
 
 
-int Fattree_mesh::getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port){
+int Fattree_mesh::getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port) const{
     assert(layer < fattree_n - 1 
 		    && node < fattree_switch_layer_width 
 		    && port < fattree_k);
@@ -384,7 +384,7 @@ int Fattree_mesh::getFattreeNextLayerConnectedNodeOffset(int layer, int node, in
     return offset;
 }
 
-int Fattree_mesh::getFattreeNextLayerConnectedNodePort(int layer, int node, int port){
+int Fattree_mesh::getFattreeNextLayerConnectedNodePort(int layer, int node, int port) const{
     assert(layer < fattree_n - 1 
 		    && node < fattree_switch_layer_width 
 		    && port < fattree_k);
@@ -414,7 +414,7 @@ int Fattree_mesh::getMeshRightChannelID(int mesh_id, int node_id, int dim) const
     return base + offset;
 }
 
-int Fattree_mesh::getMeshRelativeLeftNodeID( int node_id, int dim){
+int Fattree_mesh::getMeshRelativeLeftNodeID( int node_id, int dim) const{
     int k_exp_dim = powi(mesh_k, dim);
     int loc_in_dim = (node_id / k_exp_dim ) % mesh_k;
     if(loc_in_dim == 0)	//wrap around to the rightmost node within this dim
@@ -422,7 +422,7 @@ int Fattree_mesh::getMeshRelativeLeftNodeID( int node_id, int dim){
     return node_id - k_exp_dim;	//left is prior to right
 }
 
-int Fattree_mesh::getMeshRelativeRightNodeID( int node_id, int dim){
+int Fattree_mesh::getMeshRelativeRightNodeID( int node_id, int dim) const{
     int k_exp_dim = powi(mesh_k, dim);
     int loc_in_dim = (node_id / k_exp_dim ) % mesh_k;
     if(loc_in_dim == mesh_k - 1)//wrap around to the leftmost node within this dim
@@ -443,7 +443,7 @@ int Fattree_mesh::getMeshInChannelID(int mesh_id, int out_channel) const{
     return base + offset;
 }
 
-int Fattree_mesh::getMeshTerminalChannelID(int mesh_id, int node_id){
+int Fattree_mesh::getMeshTerminalChannelID(int mesh_id, int node_id) const{
 	return mesh_id * mesh_nodes + node_id;
 }
 

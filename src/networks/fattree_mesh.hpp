@@ -48,27 +48,27 @@ private:
 	Router*& getMeshNode(int mesh_id, int node_id);
 
 public:
-	int getFattreeNodeID(int layer, int pos);
+	int getFattreeNodeID(int layer, int pos) const;
 
-	int getFattreeUpChannelID(int layer, int node, int pos);
+	int getFattreeUpChannelID(int layer, int node, int pos) const;
 	int getFattreeDownChannelID(int layer, int node, int pos) const;
 
-	int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port);
-	int getFattreeNextLayerConnectedNodePort(int layer, int node, int port);
+	int getFattreeNextLayerConnectedNodeOffset(int layer, int node, int port) const;
+	int getFattreeNextLayerConnectedNodePort(int layer, int node, int port) const;
 	
 
-	int getMeshNodeID(int mesh_id, int node_id);
+	int getMeshNodeID(int mesh_id, int node_id) const;
 
 	int getMeshLeftChannelID(int mesh_id, int node_id, int dim) const;
 	int getMeshRightChannelID(int mesh_id, int node_id, int dim) const;
 
-	int getMeshRelativeLeftNodeID(int node_id, int dim);
-	int getMeshRelativeRightNodeID(int node_id, int dim);
+	int getMeshRelativeLeftNodeID(int node_id, int dim) const;
+	int getMeshRelativeRightNodeID(int node_id, int dim) const;
 
 	int getMeshOutChannelID(int mesh_id, int out_channel) const;
 	int getMeshInChannelID(int mesh_id, int out_channel) const;
 
-	int getMeshTerminalChannelID(int mesh_id, int node_id);
+	int getMeshTerminalChannelID(int mesh_id, int node_id) const;
 
 
 //public:
