@@ -29,7 +29,12 @@ public:
 	int fattree_channels;	//how many channels the big fattree has
 	
 	map<int, int> bridge_nodes; //which node will be connected to fattree,
-	//using which out channel of the mesh
+	//using which out channel of the mesh. index: node_id, channel_id
+	vector<pair<int, int> > bridge_nodes_list;	//vector's index is meaningless.
+	//stores the map in a sequential way, so we can access the element randomly.
+
+	map<int, int> chan_src_ix;	//a channel's index in its source's channel array
+	map<int, int> chan_sink_ix;	//a channel's index in its sink's channel array
 
 private:
     void _ComputeSize(const Configuration &config);

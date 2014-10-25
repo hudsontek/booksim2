@@ -129,7 +129,7 @@ void FatTree::_BuildNet( const Configuration& config )
 
   //
   // Connect Channels to Routers
-  //the procedure's order is important, because the routing function relies on it
+  //the procedure's order is IMPORTANT, because the routing function relies on it
 
   //
   // Router Connection Rule: Output Ports <gK Move DOWN Network
@@ -204,7 +204,7 @@ void FatTree::_BuildNet( const Configuration& config )
 
   //connect all down input channels
   for (level = 0; level<_n-1; level++){
-    //input channel are numbered interleavely, the interleaev depends on level
+    //input channel are numbered interleavely, the interleave depends on level
     int routers_per_neighborhood = powi(_k,_n-1-(level)); 
     int routers_per_branch = powi(_k,_n-1-(level+1)); 
     int level_offset = routers_per_neighborhood*_k;

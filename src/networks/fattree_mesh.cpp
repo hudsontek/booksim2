@@ -93,23 +93,13 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		}
     }//end of instantiate fattree nodes
 
-    // within the fattree, connect switch nodes to channels
+    // within the fattree, connect channels to switch nodes
     for(int layer = 0; layer < fattree_n; ++layer)
     {
 		for(int node = 0; node < fattree_switch_layer_width; ++node)
 		{
 		    for(int port = 0; port < fattree_k; ++port)
 		    {
-				if(layer > 0)//this router isn't @ top level, connect upside channels
-				{
-				    //attach out channel to this node
-				    chan_ix = getFattreeUpChannelID(layer, node, port);
-				    getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
-						    _chan_cred[chan_ix]);
-				    _chan[chan_ix]->SetLatency(1);
-				    _chan_cred[chan_ix]->SetLatency(1);
-				}
-
 				if(layer < fattree_n - 1)//this router isn't @ bottom level, connect downside channels
 				{
 				    //attach out channel to this node
@@ -122,6 +112,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 				    //connect this out channel to the related node in next layer
 				    node_offset = getFattreeNextLayerConnectedNodeOffset(layer, node, port);
 				    node_port =	  getFattreeNextLayerConnectedNodePort(layer, node, port);
+
 				    getFattreeNode(layer + 1, node_offset)->AddInputChannel(_chan[chan_ix],
 						    _chan_cred[chan_ix]);
 
@@ -130,9 +121,21 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 				    getFattreeNode(layer, node)->AddInputChannel(_chan[chan_ix],
 						    _chan_cred[chan_ix]);
 				}
+
+				if(layer > 0)//this router isn't @ top level, connect upside channels
+				{
+					//attach out channel to this node
+					chan_ix = getFattreeUpChannelID(layer, node, port);
+					getFattreeNode(layer, node)->AddOutputChannel(_chan[chan_ix],
+							_chan_cred[chan_ix]);
+					_chan[chan_ix]->SetLatency(1);
+					_chan_cred[chan_ix]->SetLatency(1);
+				}
 		    }
 		}
     }//end of connect switch nodes to channels in fattree
+
+
 
     assert(mesh_k > 1);
     map<int,int>::const_iterator iter; //iterator into the bridgeNode set
@@ -156,7 +159,6 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
 		    degree = 2 * mesh_n + 1;	//"1" is for the inject/eject channel
 		    iter = bridge_nodes.find(node);
 		    if(iter != bridge_nodes.end())  //this node will connect to fattree
-//				degree += bridge_nodes.size();	//a bug is fixed here
 		    	degree += 1;	//"1" is for the channel connected to fattree
 
 		    Router *r = Router::NewRouter(config, this, name.str(), 
@@ -301,6 +303,7 @@ void Fattree_mesh::generateBridgeNodeSet(void){
     for(int ix = 0; ix < mesh_outchannel_cnt; ++ix)
     {
 		bridge_nodes[ix] = ix;
+		bridge_nodes_list.push_back(make_pair(ix, ix));
     }
 }
 
@@ -435,11 +438,13 @@ int Fattree_mesh::getFattreeN() const
     return fattree_n;
 }
 
-//a dummy routing function
+//routing function, the out_port is index into Router's _input_channels,
+//_output_channels, _input_credits, _output_credits, so these channels
+//must be added to Router in a certain order, so we can calculate it here.
 void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel, 
 		OutputSet *outputs, bool inject, const Network *net1)
 {
-	//common part of a routing function
+	//common part of the routing function
 	int vcBegin = 0, vcEnd = gNumVCs - 1;
 	if (f->type == Flit::READ_REQUEST) {
 		vcBegin = gReadReqBeginVC;
@@ -456,7 +461,8 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 	}
 	assert(((f->vc >= vcBegin) && (f->vc <= vcEnd)) || (inject && (f->vc < 0)));
 
-	Fattree_mesh *net = (Fattree_mesh *)net1;	//the explicit type cast is necessary
+	assert(net1);
+	const Fattree_mesh *net = (Fattree_mesh *)net1;	//the explicit type cast is necessary
 
 	int out_port;
 
@@ -470,39 +476,36 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 		int loc = r->GetID();
 
 		assert(loc < gSize);
-		int fattree_width = powi(FATTREE_K, FATTREE_N - 1);
-		int fattree_switches = FATTREE_N * fattree_width;
-		int mesh_nodes = powi(MESH_K, MESH_N);
 
-		int loc_mesh = (loc - fattree_switches) / mesh_nodes;
-		int dest_mesh = (dest - fattree_switches) / mesh_nodes;
+		int loc_mesh = (loc - net->fattree_switches) / net->mesh_nodes;
+		int dest_mesh = (dest - net->fattree_switches) / net->mesh_nodes;
 
-		if(loc < fattree_switches)	//this is a fattree node
+		if(loc < net->fattree_switches)	//this is a fattree node
 		{
-			int level = loc / fattree_width;
-			int pos = loc % fattree_width;
-			int routers_per_cluster = powi(FATTREE_K, FATTREE_N - level - 1);
+			int level = loc / net->fattree_switch_layer_width;
+			int pos = loc % net->fattree_switch_layer_width;
+			int routers_per_cluster = powi(net->fattree_k, net->fattree_n - level - 1);
 			int cluster = pos / routers_per_cluster;
-			int nodes_per_cluster = powi(FATTREE_K, FATTREE_N - level);
+			int nodes_per_cluster = powi(net->fattree_k, net->fattree_n - level);
 
 			if(dest_mesh < (cluster + 1) * nodes_per_cluster	//we've reached NCA, going down
 					&& dest_mesh >= cluster * nodes_per_cluster)
 			{
-				if(level == FATTREE_N - 1)	//lowest level
+				if(level == net->fattree_n - 1)	//lowest level
 				{
-					out_port = dest_mesh % FATTREE_K;
+					out_port = net->fattree_k + dest_mesh % net->fattree_k;
 				}
-				else
+				else	//not lowest level
 				{
-					int nodes_per_branch = nodes_per_cluster / FATTREE_K;
+					int nodes_per_branch = nodes_per_cluster / net->fattree_k;
 					int offset_in_cluster = dest_mesh % nodes_per_cluster;
-					out_port = offset_in_cluster / nodes_per_branch;
+					out_port = net->fattree_k + offset_in_cluster / nodes_per_branch;
 				}
 			}
 			else	//destination is in other subtree, going up
 			{
 //				assert(in_channel < FATTREE_K);
-
+				out_port = RandomInt(net->fattree_k - 1);
 			}
 		}
 		else	//this is a mesh node
@@ -515,19 +518,20 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 				}
 				else	//use dor within this mesh to reach the destination node
 				{
-					loc %= mesh_nodes;
-					dest %= mesh_nodes;
+					loc %= net->mesh_nodes;	//get the relative id within the mesh
+					dest %= net->mesh_nodes;//get the relative id within the mesh
+
 					int dim;
-					for(dim = 0; dim < MESH_N - 1; ++dim)
+					for(dim = 0; dim < net->mesh_n - 1; ++dim)
 					{
-						if(loc % MESH_K != dest % MESH_K)	//loc and dest are not @ the same location within this dimension
+						if(loc % net->mesh_k != dest % net->mesh_k)	//loc and dest are not @ the same location within this dimension
 							break;
-						loc /= MESH_K;
-						dest /= MESH_K;
+						loc /= net->mesh_k;
+						dest /= net->mesh_k;
 					}
 
-					loc %= MESH_K;
-					dest %= MESH_K;
+					loc %= net->mesh_k;
+					dest %= net->mesh_k;
 
 					if(loc < dest)
 						out_port = 2 * dim + 1;	//move right
@@ -535,9 +539,37 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 						out_port = 2 * dim;		//move left
 				}
 			}
-			else	//we should get out of this mesh first
+			else	//we are still @ source mesh
 			{
+				map<int,int>::const_iterator iter; //iterator into the bridgeNode set
 
+				loc %= net->mesh_nodes;	//get the relative id within the mesh
+
+				iter = net->bridge_nodes.find(loc);
+				if(iter != net->bridge_nodes.end())	//current node is a bridge node
+				{
+					out_port = r->NumOutputs() - 1;
+				}
+				else//randomly choose a bridge node
+				{
+					dest = net->bridge_nodes_list[ RandomInt(net->bridge_nodes_list.size() - 1) ].first;
+					int dim;
+					for(dim = 0; dim < net->mesh_n - 1; ++dim)
+					{
+						if(loc % net->mesh_k != dest % net->mesh_k)	//loc and dest are not @ the same location within this dimension
+							break;
+						loc /= net->mesh_k;
+						dest /= net->mesh_k;
+					}
+
+					loc %= net->mesh_k;
+					dest %= net->mesh_k;
+
+					if(loc < dest)
+						out_port = 2 * dim + 1;	//move right
+					else
+						out_port = 2 * dim;		//move left
+				}
 			}
 		}
 	}
