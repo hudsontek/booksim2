@@ -510,7 +510,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 
 		assert(loc < gSize);
 
-		int loc_mesh = (loc - net->fattree_switches) / net->mesh_nodes;
+		int loc_mesh = (loc - net->fattree_switches) / net->mesh_nodes;	//may be negative
 		int dest_mesh = (dest - net->fattree_switches) / net->mesh_nodes;
 
 		int chan_id;
@@ -528,7 +528,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 			{
 				if(level == net->fattree_n - 1)	//lowest level
 				{
-					//the situation is a little complicate here
+					//the situation is a little complicate here if we want the shortest path
 					//randomly choose a bridge node, could this cause dead lock?
 					chan_id = net->getMeshInChannelID(dest_mesh,
 							RandomInt(net->mesh_outchannel_cnt - 1));
@@ -546,7 +546,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 			else	//destination is in other subtree, going up
 			{
 //				assert(in_channel < FATTREE_K);
-				chan_id = net->getFattreeDownChannelID(level,
+				chan_id = net->getFattreeUpChannelID(level,
 						pos, RandomInt(net->fattree_k - 1));
 				out_port = net->chan_src_ix.find(chan_id)->second;
 			}
