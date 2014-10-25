@@ -79,6 +79,7 @@ public:
     int getMeshK() const;
 	int getFattreeN() const;
 	int getFattreeK() const;
+	void printTopo() const;
 };
 
 //routing functions

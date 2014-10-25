@@ -229,30 +229,8 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
     //print out the topology
     cout << "before the bridge channels are connected." << endl;
 
-    for(int i = 0; i < _size; ++i)
-    {
-    	FlitChannel *fc;
-    	cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
-    	for(int j = 0; j < _routers[i]->NumInputs(); ++j)
-    	{
-    		fc = _routers[i]->GetInputChannel(j);
-    		cout << "\t" << fc->Name();
-    		cout << " from " << fc->GetSource()->Name() << endl;
-    	}
-    	cout << endl;
+    printTopo();
 
-    	cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
-    	for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
-    	{
-    		fc = _routers[i]->GetOutputChannel(j);
-    		cout << "\t" << fc->Name();
-    		cout << " to " << fc->GetSink()->Name() << endl;
-    	}
-
-    	cout << "===============" << endl;
-    }
-
-    cout << "======================================================" << endl;
 #endif
 
     //so far, we have neither attached bridge channels to fattree nor meshes
@@ -295,30 +273,7 @@ void Fattree_mesh::_BuildNet(const Configuration &config){
     //print out the topology
     cout << "after the whole topology is completed." << endl;
 
-    for(int i = 0; i < _size; ++i)
-    {
-    	FlitChannel *fc;
-		cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
-		for(int j = 0; j < _routers[i]->NumInputs(); ++j)
-		{
-			fc = _routers[i]->GetInputChannel(j);
-		    cout << "\t" << fc->Name();
-		    cout << " from " << fc->GetSource()->Name() << endl;
-		}
-		cout << endl;
-
-		cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
-		for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
-		{
-		    fc = _routers[i]->GetOutputChannel(j);
-		    cout << "\t" << fc->Name();
-		    cout << " to " << fc->GetSink()->Name() << endl;
-		}
-
-		cout << "===============" << endl;
-    }
-
-    cout << "======================================================" << endl;
+    printTopo();
 
 #endif
 
@@ -469,6 +424,65 @@ int Fattree_mesh::getFattreeK() const
 int Fattree_mesh::getFattreeN() const
 {
     return fattree_n;
+}
+
+void Fattree_mesh::printTopo() const
+{
+	for(int i = 0; i < _size; ++i)
+	{
+		const FlitChannel *fc;
+		const Router *r;
+
+//		//print the input channels
+//		cout << _routers[i]->Name() << " has " << _routers[i]->NumInputs() << " input channels:" << endl;
+//		for(int j = 0; j < _routers[i]->NumInputs(); ++j)
+//		{
+//			fc = _routers[i]->GetInputChannel(j);
+//			if(!fc)
+//			{
+//				cout << "channel_not_avail." << endl;
+//				continue;
+//			}
+//
+//			cout << "\t" << fc->Name() << " from ";
+//
+//			r = fc->GetSource();
+//			if(!r)
+//			{
+//				cout << "router_not_avail." <<endl;
+//				continue;
+//			}
+//			cout << r->Name() << endl;
+//		}
+//		cout << endl;
+
+
+		//print the output channels
+		cout << _routers[i]->Name() << " has " << _routers[i]->NumOutputs() << " output channels:" << endl;
+		for(int j = 0; j < _routers[i]->NumOutputs(); ++j)
+		{
+			fc = _routers[i]->GetOutputChannel(j);
+			if(!fc)
+			{
+				cout << "channel not avail yet." << endl;
+				continue;
+			}
+
+			cout << "\t" << fc->Name() << " to ";
+
+			r = fc->GetSink();
+			if(!r)
+			{
+				cout << "router not avail yet." <<endl;
+				continue;
+			}
+			cout << r->Name() << endl;
+		}
+
+		cout << "===============" << endl;
+	}
+
+	cout << "======================================================" << endl;
 }
 
 //routing function, the out_port is index into Router's _input_channels,
