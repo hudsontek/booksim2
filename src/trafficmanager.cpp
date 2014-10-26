@@ -1164,7 +1164,7 @@ void TrafficManager::_Step( )
                             const Router * router = inject->GetSink();
                             assert(router);
                             int in_channel = inject->GetSinkPort();
-                            _rf(router, f, in_channel, &f->la_route_set, false, _net[subnet]);	//similar to line 1079
+                            _rf(router, f, in_channel, &f->la_route_set, false, router->pnet);	//similar to line 1079
                             if(f->watch) {
                                 *gWatchOut << GetSimTime() << " | "
                                            << "node" << n << " | "

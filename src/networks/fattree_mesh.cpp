@@ -652,6 +652,22 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 		}// end of this is a mesh node
 	}//end of the out_port needs to be calculated
 
+#ifdef _FATTREE_MESH_DEBUG_
+
+	cout << "flit " << f->id << " from src " << f->src << " ";
+	if(inject)
+	{
+		cout << "@ inject src ";
+	}
+	else
+	{
+		cout << "@ router " << r->GetID() << " ";
+	}
+
+	cout << "through out_port " << out_port << " destined for node " << f->dest << endl;
+
+#endif
+
 	outputs->Clear();
 	outputs->AddRange(out_port, vcBegin, vcEnd);
 }
