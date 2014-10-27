@@ -623,6 +623,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 				}
 				else	//current node isn't a bridge node, we need to reach one first
 				{
+					//the situation is a little complicate here if we want the shortest path
 					//randomly choose a bridge node
 					dest = net->bridge_nodes_list[ RandomInt(net->bridge_nodes_list.size() - 1) ].first;
 
