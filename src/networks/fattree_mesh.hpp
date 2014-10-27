@@ -8,11 +8,11 @@
 #include "routefunc.hpp"
 #include <map>
 
-#define MESH_K 3
-#define MESH_N 2
-#define FATTREE_K 2
-#define FATTREE_N 2
-#define MESH_OUTCHANNEL_CNT 1
+//#define MESH_K 3
+//#define MESH_N 2
+//#define FATTREE_K 2
+//#define FATTREE_N 2
+//#define MESH_OUTCHANNEL_CNT 1
 
 
 class Fattree_mesh : public Network {
@@ -33,10 +33,10 @@ public:
 	vector<pair<int, int> > bridge_nodes_list;	//vector's index is meaningless.
 	//stores the map in a sequential way, so we can access the element randomly.
 
-	map<int, int> chan_src_ix;	//a channel's index in its source's channel array
-	map<int, int> chan_sink_ix;	//a channel's index in its sink's channel array
-	map<int, int> term_chan_src_ix;	//a terminal channel's index in its source's channel array
-	map<int, int> term_chan_sink_ix;//a terminal channel's index in its sink's channel array
+	vector<int> chan_src_ix;	//a channel's index in its source's channel array
+	vector<int> chan_sink_ix;	//a channel's index in its sink's channel array
+	vector<int> term_chan_src_ix;	//a terminal channel's index in its source's channel array
+	vector<int> term_chan_sink_ix;//a terminal channel's index in its sink's channel array
 
 private:
     void _ComputeSize(const Configuration &config);
@@ -69,6 +69,23 @@ public:
 	int getMeshInChannelID(int mesh_id, int out_channel) const;
 
 	int getMeshTerminalChannelID(int mesh_id, int node_id) const;
+
+	inline int getChanSrcIx(unsigned chan_id) const {
+		assert(chan_id >= 0 && chan_id < chan_src_ix.size());
+		return chan_src_ix[chan_id];
+	}
+	inline int getChanSinkIx(unsigned chan_id) const {
+		assert(chan_id >= 0 && chan_id < chan_sink_ix.size());
+		return chan_sink_ix[chan_id];
+	}
+	inline int getTermChanSrcIx(unsigned chan_id) const {
+		assert(chan_id >= 0 && chan_id < term_chan_src_ix.size());
+		return term_chan_src_ix[chan_id];
+	}
+	inline int getTermChanSinkIx(unsigned chan_id) const {
+		assert(chan_id >= 0 && chan_id < term_chan_sink_ix.size());
+		return term_chan_sink_ix[chan_id];
+	}
 
 
 //public:

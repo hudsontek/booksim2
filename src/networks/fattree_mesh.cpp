@@ -53,6 +53,11 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     gSize = _size;
     gChannels = _channels;
 
+    chan_src_ix.assign(_channels, 0);
+    chan_sink_ix.assign(_channels, 0);
+    term_chan_src_ix.assign(_nodes, 0);
+    term_chan_sink_ix.assign(_nodes, 0);
+
 #ifdef _FATTREE_MESH_DEBUG_
     cout << "_nodes=" << _nodes << endl;
     cout << "_size=" << _size << endl;
@@ -531,8 +536,6 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 
 		int chan_id;
 
-		map<int, int>::const_iterator iter;
-
 		if(loc < net->fattree_switches)	//this is a fattree node
 		{
 			int level = loc / net->fattree_switch_layer_width;
@@ -550,9 +553,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					//randomly choose a bridge node, could this cause dead lock?
 					chan_id = net->getMeshInChannelID(dest_mesh,
 							RandomInt(net->mesh_outchannel_cnt - 1));
-					iter = net->chan_src_ix.find(chan_id);
-					assert(iter != net->chan_src_ix.end());
-					out_port = iter->second;
+					out_port = net->getChanSrcIx(chan_id);
 				}
 				else	//not lowest level
 				{
@@ -560,19 +561,14 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					int offset_in_cluster = dest_mesh % nodes_per_cluster;
 					int branch = offset_in_cluster / nodes_per_branch;
 					chan_id = net->getFattreeDownChannelID(level, pos, branch);
-					iter = net->chan_src_ix.find(chan_id);
-					assert(iter != net->chan_src_ix.end());
-					out_port = iter->second;
+					out_port = net->getChanSrcIx(chan_id);
 				}
 			}
 			else	//destination is in other subtree, going up
 			{
-//				assert(in_channel < FATTREE_K);
 				chan_id = net->getFattreeUpChannelID(level,
 						pos, RandomInt(net->fattree_k - 1));
-				iter = net->chan_src_ix.find(chan_id);
-				assert(iter != net->chan_src_ix.end());
-				out_port = iter->second;
+				out_port = net->getChanSrcIx(chan_id);
 			}
 		}//end of this is a fattree node
 		else	//this is a mesh node
@@ -585,9 +581,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 				if(loc == dest)	//reach the destination node
 				{
 					chan_id = loc_mesh * net->mesh_nodes + loc;	//inject/eject channel id
-					iter = net->term_chan_src_ix.find(chan_id);
-					assert(iter != net->term_chan_src_ix.end());
-					out_port = iter->second;
+					out_port = net->getTermChanSrcIx(chan_id);
 				}
 				else	//use dor within this mesh to reach the destination node
 				{
@@ -614,22 +608,18 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
 					}
 
-					iter = net->chan_src_ix.find(chan_id);
-					assert(iter != net->chan_src_ix.end());
-					out_port = iter->second;
+					out_port = net->getChanSrcIx(chan_id);
 				}
 			}
-			else	//we are still @ source mesh
+			else	//loc_mesh != dest_mesh
 			{
-				map<int,int>::const_iterator bniter; //iterator into the bridgeNode set
+				map<int,int>::const_iterator iter; //iterator into the bridgeNode set
 
-				bniter = net->bridge_nodes.find(loc);
-				if(bniter != net->bridge_nodes.end())	//current node is a bridge node
+				iter = net->bridge_nodes.find(loc);
+				if(iter != net->bridge_nodes.end())	//current node is a bridge node
 				{
-					chan_id = net->getMeshOutChannelID(loc_mesh, bniter->second);
-					iter = net->chan_src_ix.find(chan_id);
-					assert(iter != net->chan_src_ix.end());
-					out_port = iter->second;
+					chan_id = net->getMeshOutChannelID(loc_mesh, iter->second);
+					out_port = net->getChanSrcIx(chan_id);
 				}
 				else	//current node isn't a bridge node, we need to reach one first
 				{
@@ -659,9 +649,7 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
 					}
 
-					iter = net->chan_src_ix.find(chan_id);
-					assert(iter != net->chan_src_ix.end());
-					out_port = iter->second;
+					out_port = net->getChanSrcIx(chan_id);
 				}//end of current node isn't a bridge node
 			}//end of @ source mesh
 		}// end of this is a mesh node
