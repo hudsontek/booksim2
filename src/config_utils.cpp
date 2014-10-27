@@ -236,7 +236,7 @@ bool ParseArgs(Configuration * cf, int argc, char * * argv)
     if(pos == string::npos && !dash) {
       // parse config file
       cf->ParseFile( argv[i] );
-      ifstream in(argv[i]);
+      ifstream in(argv[i]);	//output the config file
       cout << "BEGIN Configuration File: " << argv[i] << endl;
       while (!in.eof()) {
 		char c;

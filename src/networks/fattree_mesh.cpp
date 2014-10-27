@@ -18,12 +18,12 @@ Network( config, name )
 
 //for simplicity, the size values are obtained from the macro define
 void Fattree_mesh::_ComputeSize(const Configuration &config){
-    mesh_k = MESH_K;
-    mesh_n = MESH_N;
-    fattree_k = FATTREE_K;
-    fattree_n = FATTREE_N;
+    mesh_k = config.GetInt("mesh_k");
+    mesh_n = config.GetInt("mesh_n");
+    fattree_k = config.GetInt("fattree_k");
+    fattree_n = config.GetInt("fattree_n");
     mesh_cnt = powi(fattree_k, fattree_n);
-    mesh_outchannel_cnt = MESH_OUTCHANNEL_CNT;
+    mesh_outchannel_cnt = config.GetInt("mesh_out_channels");
 
     //gK, gN are global variables used by routing functions
     gK = fattree_k;//not sure
@@ -527,10 +527,11 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 		assert(dest < gNodes);
 
 		int loc_mesh = (loc - net->fattree_switches) / net->mesh_nodes;	//may be negative
-//		int dest_mesh = (dest - net->fattree_switches) / net->mesh_nodes;
 		int dest_mesh = dest / net->mesh_nodes;
 
 		int chan_id;
+
+		map<int, int>::const_iterator iter;
 
 		if(loc < net->fattree_switches)	//this is a fattree node
 		{
@@ -549,7 +550,9 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					//randomly choose a bridge node, could this cause dead lock?
 					chan_id = net->getMeshInChannelID(dest_mesh,
 							RandomInt(net->mesh_outchannel_cnt - 1));
-					out_port = net->chan_src_ix.find(chan_id)->second;	//we can't use operator [], because this operator is not read-only
+					iter = net->chan_src_ix.find(chan_id);
+					assert(iter != net->chan_src_ix.end());
+					out_port = iter->second;
 				}
 				else	//not lowest level
 				{
@@ -557,7 +560,9 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					int offset_in_cluster = dest_mesh % nodes_per_cluster;
 					int branch = offset_in_cluster / nodes_per_branch;
 					chan_id = net->getFattreeDownChannelID(level, pos, branch);
-					out_port = net->chan_src_ix.find(chan_id)->second;
+					iter = net->chan_src_ix.find(chan_id);
+					assert(iter != net->chan_src_ix.end());
+					out_port = iter->second;
 				}
 			}
 			else	//destination is in other subtree, going up
@@ -565,12 +570,14 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 //				assert(in_channel < FATTREE_K);
 				chan_id = net->getFattreeUpChannelID(level,
 						pos, RandomInt(net->fattree_k - 1));
-				out_port = net->chan_src_ix.find(chan_id)->second;
+				iter = net->chan_src_ix.find(chan_id);
+				assert(iter != net->chan_src_ix.end());
+				out_port = iter->second;
 			}
 		}//end of this is a fattree node
 		else	//this is a mesh node
 		{
-			loc %= net->mesh_nodes;	//get the relative id within the mesh
+			loc = (loc - net->fattree_switches) % net->mesh_nodes;	//get the relative id within the mesh
 			dest %= net->mesh_nodes;//get the relative id within the mesh
 
 			if(loc_mesh == dest_mesh)	//reach the destination mesh
@@ -578,7 +585,9 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 				if(loc == dest)	//reach the destination node
 				{
 					chan_id = loc_mesh * net->mesh_nodes + loc;	//inject/eject channel id
-					out_port = net->term_chan_src_ix.find(chan_id)->second;
+					iter = net->term_chan_src_ix.find(chan_id);
+					assert(iter != net->term_chan_src_ix.end());
+					out_port = iter->second;
 				}
 				else	//use dor within this mesh to reach the destination node
 				{
@@ -599,24 +608,28 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					if(loc_tmp < dest_tmp)	//move right
 					{
 						chan_id = net->getMeshRightChannelID(loc_mesh, loc, dim);
-						out_port = net->chan_src_ix.find(chan_id)->second;
 					}
 					else			//move left
 					{
 						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
-						out_port = net->chan_src_ix.find(chan_id)->second;
 					}
+
+					iter = net->chan_src_ix.find(chan_id);
+					assert(iter != net->chan_src_ix.end());
+					out_port = iter->second;
 				}
 			}
 			else	//we are still @ source mesh
 			{
-				map<int,int>::const_iterator iter; //iterator into the bridgeNode set
+				map<int,int>::const_iterator bniter; //iterator into the bridgeNode set
 
-				iter = net->bridge_nodes.find(loc);
-				if(iter != net->bridge_nodes.end())	//current node is a bridge node
+				bniter = net->bridge_nodes.find(loc);
+				if(bniter != net->bridge_nodes.end())	//current node is a bridge node
 				{
-					chan_id = net->getMeshOutChannelID(loc_mesh, iter->second);
-					out_port = net->chan_src_ix.find(chan_id)->second;
+					chan_id = net->getMeshOutChannelID(loc_mesh, bniter->second);
+					iter = net->chan_src_ix.find(chan_id);
+					assert(iter != net->chan_src_ix.end());
+					out_port = iter->second;
 				}
 				else	//current node isn't a bridge node, we need to reach one first
 				{
@@ -640,13 +653,15 @@ void dor_nca_fattree_mesh( const Router *r, const Flit *f, int in_channel,
 					if(loc_tmp < dest_tmp)	//move right
 					{
 						chan_id = net->getMeshRightChannelID(loc_mesh, loc, dim);
-						out_port = net->chan_src_ix.find(chan_id)->second;
 					}
 					else			//move left
 					{
 						chan_id = net->getMeshLeftChannelID(loc_mesh, loc, dim);
-						out_port = net->chan_src_ix.find(chan_id)->second;
 					}
+
+					iter = net->chan_src_ix.find(chan_id);
+					assert(iter != net->chan_src_ix.end());
+					out_port = iter->second;
 				}//end of current node isn't a bridge node
 			}//end of @ source mesh
 		}// end of this is a mesh node

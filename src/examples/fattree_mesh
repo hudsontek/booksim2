@@ -1,3 +1,8 @@
 topology = fattree_mesh;
 traffic = uniform;
 routing_function = dor_nca;
+mesh_k = 3;
+mesh_n = 2;
+fattree_k = 2;
+fattree_n = 2;
+mesh_out_channels = 1;

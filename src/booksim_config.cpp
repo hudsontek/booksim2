@@ -69,6 +69,13 @@ BookSimConfig::BookSimConfig( )
   _int_map["fail_seed"]     = 0; //legacy
   AddStrField( "fail_seed", "" ); // workaround to allow special "time" value
 
+  //==============Fattree_mesh topology parameters
+  _int_map["mesh_k"] = 2;
+  _int_map["mesh_n"] = 2;
+  _int_map["fattree_k"] = 2;
+  _int_map["fattree_n"] = 2;
+  _int_map["mesh_out_channels"] = 1;
+
   //==== Single-node options ===============================
 
   _int_map["in_ports"]  = 5;

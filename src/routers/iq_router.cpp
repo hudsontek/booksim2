@@ -605,7 +605,7 @@ void IQRouter::_VCAllocEvaluate( )
 	iset != setlist.end();
 	++iset) {
 
-      int const out_port = iset->output_port;cout << "in iq_router.cpp line 608:flit " << f->id << " @ router " << _id << " out_port=" << out_port << " ,_outputs=" << _outputs << endl;
+      int const out_port = iset->output_port;	//cout << "in iq_router.cpp line 608:flit " << f->id << " @ router " << _id << " out_port=" << out_port << " ,_outputs=" << _outputs << endl;
       assert((out_port >= 0) && (out_port < _outputs));
 
       BufferState const * const dest_buf = _next_buf[out_port];
