@@ -53,10 +53,10 @@ void Fattree_mesh::_ComputeSize(const Configuration &config){
     gSize = _size;
     gChannels = _channels;
 
-    chan_src_ix.assign(_channels, 0);
-    chan_sink_ix.assign(_channels, 0);
-    term_chan_src_ix.assign(_nodes, 0);
-    term_chan_sink_ix.assign(_nodes, 0);
+    chan_src_ix.assign(_channels, -1);
+    chan_sink_ix.assign(_channels, -1);
+    term_chan_src_ix.assign(_nodes, -1);
+    term_chan_sink_ix.assign(_nodes, -1);
 
 #ifdef _FATTREE_MESH_DEBUG_
     cout << "_nodes=" << _nodes << endl;
