@@ -26,6 +26,7 @@
 
 LEX = flex
 YACC   = bison -y
+CC = gcc
 DEFINE = 
 INCPATH = -I. -Iarbiters -Iallocators -Irouters -Inetworks -Ipower
 CPPFLAGS += -Wall $(INCPATH) $(DEFINE)
@@ -33,7 +34,7 @@ CPPFLAGS += -Wall $(INCPATH) $(DEFINE)
 CPPFLAGS += -g
 LFLAGS +=
 
-PROG := booksim
+PROG := booksim.exe
 
 # simulator source files
 CPP_SRCS = $(wildcard *.cpp) $(wildcard */*.cpp)

@@ -27,7 +27,7 @@
 
 #ifndef _BOOKSIM_HPP_
 #define _BOOKSIM_HPP_
-
+#include <time.h>
 #include <string>
 #include <cstdlib>
 #include <cstring>
