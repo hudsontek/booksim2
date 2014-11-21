@@ -1271,7 +1271,7 @@ void TrafficManager::_Step( )
         cout<<"TIME "<<_time<<endl;
     }
 
-}
+}//end of _Step()
   //check if there are packets not completing transmission
 bool TrafficManager::_PacketsOutstanding( ) const
 {
